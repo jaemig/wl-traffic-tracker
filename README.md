@@ -1,5 +1,4 @@
 <h1 align="center">Wiener Linien Traffic Tracker</h1>
-<hr />
 
 ## About WLTT
 
