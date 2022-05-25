@@ -12,4 +12,4 @@ WLTT is a web application for tracking and monitoring disturbances and delays of
 
 ## License
 
-All Rights Reserved. For more information, see [the License file](license.md)
+All Rights Reserved. For more information, see [the License file](license.md).
