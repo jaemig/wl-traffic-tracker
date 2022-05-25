@@ -2,7 +2,7 @@
 
 ## About WLTT
 
-WLTT is a web application for tracking and monitoring disturbances and delays of public transport reported by Wiener Linien. Besides daily statistics, those reports get analyzed regularly to find environmental sources of disturbances and comparable deviations from normal traffic.
+WLTT is a web application for tracking and monitoring disturbances and delays of public transport reported by Wiener Linien. Besides daily statistics, those reports get analyzed regularly to find protential causes of disturbances and comparable deviations from normal traffic.
 
 ## Tracked informations
 
