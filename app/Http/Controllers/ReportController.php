@@ -23,6 +23,6 @@ class ReportController extends Controller
      */
     public function checkTrafficReport(Request $request) {
         $was_success = $this->report_service->checkTrafficReport();
-        return response('', 200);
+        return response('', $was_success ? 200 : 500);
     }
 }

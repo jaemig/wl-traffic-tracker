@@ -23,27 +23,9 @@ class ReportService {
             if (strlen($wl_status) > 0) {
                 $json_data = json_decode($wl_status);
                 if ($json_data->message->value != "OK" || $json_data->message->messageCode != 1) throw new \Exception;
-                $open_reports = TrafficReport::where('time_start', 'time_end')->get();
+                // $open_reports = TrafficReport::where('time_start', 'time_end')->get();
 
-                try
-                {
-                    foreach($open_reports as $open_report) {
-                        $report_found = false;
-                        foreach ($json_data->data->trafficInfos as $active_reports) {
-                            if ($active_reports->name == $open_report['name']) {
-                                $report_found = true;
-                                break;
-                            }
-                        }
-
-                        if (!$report_found) {
-                            $open_report->time_end = Carbon::now();
-                            $open_report->save();
-                        }
-                    }
-                } catch (\Exception $e) {  }
-
-
+                $current_report_names = array();
                 //Check if there are any traffic categories that are not yet in the database
                 foreach ($json_data->data->trafficInfoCategories as $traffic_category) {
                     $existing_cat = ReportCategory::where('external_id', $traffic_category->id)->firstWhere('title', $traffic_category->title);
@@ -120,10 +102,10 @@ class ReportService {
                             }
                         }
                         catch (\Exception $e) { throw $e;}
-                    } else {
-                        // Check if the existing report has recieved any updates in the meantime
+                    } else if(!$existing_report->has_ended) {
+                        // Check if existing reports have recieved any updates in the meantime
                         $changes_made = false;
-                        if ($existing_report['priority'] != $traffic_info->priority) {
+                        if (property_exists($traffic_info, 'priority') && $existing_report['priority'] != $traffic_info->priority) {
                             $existing_report->priority = $traffic_info->priority;
                             $changes_made = true;
                         }
@@ -137,13 +119,29 @@ class ReportService {
                         }
                         if ($changes_made) $existing_report->save();
                     }
+                    array_push($current_report_names, $traffic_info->name);
+                }
+
+                // Determine reports that have ended as they are missing in the current report list
+                // and set their official time end to the current timestamp
+                $open_reports = TrafficReport::where('timestamp', '!=', 'current_timestamp()')
+                    ->where('has_ended', 0)
+                    ->get();
+                foreach ($open_reports as $open_report) {
+                    if (!in_array($open_report->name, $current_report_names)) {
+                        $open_report->time_end = Carbon::now('Europe/Vienna')->toDateTimeLocalString();
+                        $open_report->has_ended = 1;
+                        $open_report->save();
+                    }
                 }
             }
+
             DB::commit();
             return true;
         }
         catch (\Exception $e) {
             DB::rollback();
+            throw $e;
             return false;
         }
     }
