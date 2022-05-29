@@ -1,6 +1,6 @@
 import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container } from '@chakra-ui/react';
 import React, { FC, MouseEvent, useState } from 'react';
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import TabItem from './comps/TabItem';
 import { TabValues } from './constants';
 import StatItem from './comps/StatItem';
@@ -121,5 +121,12 @@ const App: FC = () => {
     return render();
 };
 
-const container = document.getElementById('root');
-if (container) createRoot(container).render(<App />)
+
+ReactDOM.render(
+    <App />,
+    document.getElementById('root')
+)
+
+// React > 18.0.2
+// const container = document.getElementById('root');
+// if (container) createRoot(container).render(<App />)
