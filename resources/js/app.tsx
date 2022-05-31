@@ -1,4 +1,4 @@
-import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container } from '@chakra-ui/react';
+import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack } from '@chakra-ui/react';
 import React, { FC, MouseEvent, useState } from 'react';
 import ReactDOM from 'react-dom';
 import TabItem from './comps/TabItem';
@@ -14,6 +14,45 @@ import AlertIcon from '../assets/alert_red.svg';
 import WarnIcon from '../assets/alert_yellow.svg';
 import ElevatorIcon from '../assets/elevator.png';
 import EscalatorIcon from '../assets/escalator.png';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+
+const ex_chart_data = [
+    {
+      name: '1',
+      uv: 4000,
+      pv: 2400,
+    },
+    {
+      name: '2',
+      uv: 3000,
+      pv: 1398,
+    },
+    {
+      name: '3',
+      uv: 2000,
+      pv: 9800,
+    },
+    {
+      name: '4',
+      uv: 2780,
+      pv: 3908,
+    },
+    {
+      name: '5',
+      uv: 1890,
+      pv: 4800,
+    },
+    {
+      name: '6',
+      uv: 2390,
+      pv: 3800,
+    },
+    {
+      name: '7',
+      uv: 3490,
+      pv: 4300,
+    },
+  ];
 
 const App: FC = () => {
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
@@ -83,12 +122,80 @@ const App: FC = () => {
                     </Flex>
                 </Center>
                 <Container maxW={MAX_WIDTH} mt="75px">
-                    <Flex justifyContent="space-between">
+                    <Flex justifyContent="space-between" fontFamily="InterVariable">
                         <StatItem label='Störungen' number={5} percentage="23.36" iconPath={AlertIcon} iconAlt={"Red alert icon"} increase />
                         <StatItem label='Verspätungen' number={8} percentage="8.05" iconPath={WarnIcon} iconAlt={"Yellow warn icon"} />
                         <StatItem label='Defekte Aufzüge' number={6} percentage="14.97" iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} increase />
                         <StatItem label='Defekte Rolltreppen' number={14} percentage="11.25" iconPath={EscalatorIcon} iconAlt={"Escalator symbole with one person"} increase />
                     </Flex>
+                </Container>
+                <Container maxW={MAX_WIDTH} mt="70px" fontFamily="InterVariable">
+                    <Box
+                        display="inline-block"
+                        border="1px solid"
+                        borderRadius="12px"
+                        borderColor="gray.200"
+                        mr="40px"
+                        width="calc(50% - 20px)"
+                        height="240px"
+                        verticalAlign="top"
+                        padding="10px"
+                        _hover={{
+                            transform: 'scale(1.01)',
+                            boxShadow: '6px 6px 24px -6px rgba(0,0,0,0.15)'
+                        }}
+                        transition="all .15s ease"
+                    >
+                        <Heading fontSize="18px" fontWeight="medium">Meldungsverlauf</Heading>
+                        <HStack spacing="15px">
+                            <Box>
+                                <Box borderRadius="full" bgColor="#EA0054" boxSize="10px" display="inline-block" />
+                                <Text fontSize="12px" display="inline-block" ml="5px">Störungen</Text>
+                            </Box>
+                            <Box>
+                                <Box borderRadius="full" bgColor="#00509D" boxSize="10px" display="inline-block" />
+                                <Text fontSize="12px" display="inline-block" ml="5px">Verspätungen</Text>
+                            </Box>
+                        </HStack>
+                        <ResponsiveContainer width="103%" height="87%">
+                            <AreaChart
+                                data={ex_chart_data}
+                                style={{ marginLeft: '-20px' }}
+                            >
+                                <defs>
+                                    <linearGradient id="colorDisrupt" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#EA0054" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
+                                    </linearGradient>
+                                    <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#00509D" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#00509D" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                                <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                                <Area type="monotone" dataKey="uv" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
+                                <Area type="monotone" dataKey="pv" stackId="1" stroke="#00509D" fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </Box>
+                    <Box
+                        display="inline-block"
+                        border="1px solid"
+                        borderRadius="12px"
+                        borderColor="gray.200"
+                        width="calc(50% - 20px)"
+                        height="240px"
+                        verticalAlign="top"
+                        padding="10px"
+                        _hover={{
+                            transform: 'scale(1.01)',
+                            boxShadow: '6px 6px 24px -6px rgba(0,0,0,0.15)'
+                        }}
+                        transition="all .15s ease"
+                    >
+                        <Heading fontSize="18px" fontWeight="medium">Melde-Ranking (U-Bahn)</Heading>
+                    </Box>
                 </Container>
                 <Box position="absolute" bottom="0" left="0" width="100%" height="90px" bgColor={purple}>
                     <Box position="absolute" top="0" left="50%" width="4xl" height="100%" transform="translateX(-50%)">

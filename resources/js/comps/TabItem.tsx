@@ -26,7 +26,7 @@ const TabItem: FC<ITabItemProps> = ({ primColor, selected, disabled, children, i
                 marginRight={ !last ? "20px" : undefined}
                 borderRadius="10px"
                 padding="10px 35px"
-                cursor="pointer"
+                cursor={disabled ? undefined : "pointer"}
                 boxShadow={selected ? ' 0px 0px 14px 0px rgba(4,2,68,0.35)' : undefined}
                 transform={selected ? 'scale(1.05)' : undefined}
                 _after={
@@ -44,7 +44,7 @@ const TabItem: FC<ITabItemProps> = ({ primColor, selected, disabled, children, i
                     }
                     : undefined
                 }
-                _hover={{
+                _hover={ disabled ? undefined : {
                     transform: 'scale(1.05)'
                 }}
                 onClick={disabled || selected || !onClick ? undefined : (e: MouseEvent) => onClick(e, id)}

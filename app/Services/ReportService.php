@@ -7,6 +7,7 @@ use App\Models\LineType;
 use App\Models\RelatedLine;
 use App\Models\RelatedStop;
 use Illuminate\Http\Request;
+use App\Models\FailedRequest;
 use App\Models\TrafficReport;
 use App\Models\ReportCategory;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,19 @@ class ReportService {
      * Gets the current traffic report from WienerLinien and checks it for new reports or updates on existing reports
      */
     public function checkTrafficReport() {
+
         try {
-            DB::beginTransaction();
             $wl_status = file_get_contents('https://www.wienerlinien.at/wl_realtime/trafficInfoList');
             // $wl_status = file_get_contents('https://je.webnickel.at//example_json_data.json');
+        }
+        catch (\Exception $e) {
+            (new FailedRequest())->save();
+            return true;
+        }
+
+
+        try {
+            DB::beginTransaction();
             if (strlen($wl_status) > 0) {
                 $json_data = json_decode($wl_status);
                 if ($json_data->message->value != "OK" || $json_data->message->messageCode != 1) throw new \Exception;
@@ -56,7 +66,7 @@ class ReportService {
                     $existing_report = TrafficReport::firstWhere('name', $traffic_info->name);
 
                     $traffic_time_start = property_exists($traffic_info, 'time') && property_exists($traffic_info->time, 'start') ? str_replace('T', ' ', substr($traffic_info->time->start, 0, strpos($traffic_info->time->start, '.'))) : null;
-                    $traffic_time_end = property_exists($traffic_info, 'time') ? str_replace('T', ' ', substr($traffic_info->time->end, 0, strpos($traffic_info->time->end, '.'))) : null;
+                    $traffic_time_end = property_exists($traffic_info, 'time') && property_exists($traffic_info->time, 'end') ? str_replace('T', ' ', substr($traffic_info->time->end, 0, strpos($traffic_info->time->end, '.'))) : null;
                     $traffic_time_resume = (property_exists($traffic_info, 'time') && property_exists($traffic_info->time, 'resume')) ? str_replace('T', ' ', substr($traffic_info->time->resume, 0, strpos($traffic_info->time->resume, '.'))) : null;
                     // Create a new traffic report
                     if (!$existing_report) {
@@ -141,7 +151,7 @@ class ReportService {
         }
         catch (\Exception $e) {
             DB::rollback();
-            throw $e;
+            // throw $e;
             return false;
         }
     }

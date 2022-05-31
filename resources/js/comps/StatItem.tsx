@@ -32,7 +32,7 @@ const StatItem: FC<IStatItemProps> = ({ label, number, increase, percentage, ico
                         iconPath && <Image src={iconPath} boxSize="15px" display="inline-block" position="relative" ml="5px" top="2px" fill="red" alt={iconAlt} />
                     }
                 </StatLabel>
-                <StatNumber>{ number }</StatNumber>
+                <StatNumber fontWeight="600">{ number }</StatNumber>
                 <StatHelpText>
                     <StatArrow type={increase ? "increase" : "decrease"} />{ percentage }%
                 </StatHelpText>
