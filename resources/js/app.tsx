@@ -14,7 +14,9 @@ import AlertIcon from '../assets/alert_red.svg';
 import WarnIcon from '../assets/alert_yellow.svg';
 import ElevatorIcon from '../assets/elevator.png';
 import EscalatorIcon from '../assets/escalator.png';
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import CircleSwitchItem from './comps/CircleSwitchItem';
+import GraphBox from './comps/GraphBox';
 
 const ex_chart_data = [
     {
@@ -54,16 +56,45 @@ const ex_chart_data = [
     },
   ];
 
+  const melde_ranking_data = [
+    {
+      name: 'U1',
+      uv: 590,
+      pv: 800,
+    },
+    {
+      name: 'U2',
+      uv: 868,
+      pv: 967,
+    },
+    {
+      name: 'U3',
+      uv: 1397,
+      pv: 1098,
+    },
+    {
+      name: 'U4',
+      uv: 1480,
+      pv: 1200,
+    },
+    {
+      name: 'U6',
+      uv: 1520,
+      pv: 1108,
+    },
+  ];
+
 const App: FC = () => {
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
+    const [selectedGraphTab, setSelectedGraphTab] = useState<1 | 2 | 3>(1);
 
     const purple = useColorModeValue('#040244', '#040244');
     const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
     const MAX_WIDTH = '5xl';
 
-    const handleTabSelection = (e: MouseEvent, id?: TabValues) => {
-        setSelectedTab(id ?? 'd');
-    }
+    const handleTabSelection = (e: MouseEvent, id?: TabValues) => setSelectedTab(id ?? 'd');
+
+    const handelGraphTabSelection = (e: MouseEvent, id: 1 | 2 | 3) => setSelectedGraphTab(id);
 
     const render = () => {
         return (
@@ -129,34 +160,13 @@ const App: FC = () => {
                         <StatItem label='Defekte Rolltreppen' number={14} percentage="11.25" iconPath={EscalatorIcon} iconAlt={"Escalator symbole with one person"} increase />
                     </Flex>
                 </Container>
-                <Container maxW={MAX_WIDTH} mt="70px" fontFamily="InterVariable">
-                    <Box
-                        display="inline-block"
-                        border="1px solid"
-                        borderRadius="12px"
-                        borderColor="gray.200"
-                        mr="40px"
-                        width="calc(50% - 20px)"
+                <Container maxW={MAX_WIDTH} mt="70px" fontFamily="InterVariable" position="relative">
+                    <GraphBox
+                        width='calc(50% - 20px)'
                         height="240px"
-                        verticalAlign="top"
-                        padding="10px"
-                        _hover={{
-                            transform: 'scale(1.01)',
-                            boxShadow: '6px 6px 24px -6px rgba(0,0,0,0.15)'
-                        }}
-                        transition="all .15s ease"
+                        title='Meldungsverlauf'
+                        labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: '#00509D'}]}
                     >
-                        <Heading fontSize="18px" fontWeight="medium">Meldungsverlauf</Heading>
-                        <HStack spacing="15px">
-                            <Box>
-                                <Box borderRadius="full" bgColor="#EA0054" boxSize="10px" display="inline-block" />
-                                <Text fontSize="12px" display="inline-block" ml="5px">Störungen</Text>
-                            </Box>
-                            <Box>
-                                <Box borderRadius="full" bgColor="#00509D" boxSize="10px" display="inline-block" />
-                                <Text fontSize="12px" display="inline-block" ml="5px">Verspätungen</Text>
-                            </Box>
-                        </HStack>
                         <ResponsiveContainer width="103%" height="87%">
                             <AreaChart
                                 data={ex_chart_data}
@@ -178,24 +188,44 @@ const App: FC = () => {
                                 <Area type="monotone" dataKey="pv" stackId="1" stroke="#00509D" fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
                             </AreaChart>
                         </ResponsiveContainer>
-                    </Box>
-                    <Box
-                        display="inline-block"
-                        border="1px solid"
-                        borderRadius="12px"
-                        borderColor="gray.200"
-                        width="calc(50% - 20px)"
+                    </GraphBox>
+                    <Flex
+                        position="relative"
+                        display="inline-flex"
                         height="240px"
-                        verticalAlign="top"
-                        padding="10px"
-                        _hover={{
-                            transform: 'scale(1.01)',
-                            boxShadow: '6px 6px 24px -6px rgba(0,0,0,0.15)'
-                        }}
-                        transition="all .15s ease"
+                        margin="0 15px"
+                        flexDirection="column"
+                        justifyContent="center"
+                        verticalAlign="middle"
                     >
-                        <Heading fontSize="18px" fontWeight="medium">Melde-Ranking (U-Bahn)</Heading>
-                    </Box>
+                        <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 1} id={1} onClick={handelGraphTabSelection} />
+                        <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 2} id={2} onClick={handelGraphTabSelection} mt="5px" />
+                        <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 3} id={3} onClick={handelGraphTabSelection} mt="5px" />
+                    </Flex>
+                    <GraphBox
+                        width='calc(50% - 40px)'
+                        height='240px'
+                        title="Melde-Ranking (U-Bahn)"
+                    >
+                        <ResponsiveContainer width="105%" height="87%" id="subway-ranking">
+                            <ComposedChart
+                                layout="vertical"
+                                data={melde_ranking_data}
+                                style={{ marginLeft: '-40px', marginTop: '25px' }}
+                            >
+                                <CartesianGrid horizontal={false} strokeDasharray="5" opacity={0.5} />
+                                <XAxis type="number" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                                <YAxis dataKey="name" type="category" scale="band" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" interval={0} />
+                                <Bar dataKey="uv" barSize={20} radius={[0, 3, 3, 0]}>
+                                    <Cell key={'cell-0'} fill="#F49397" stroke="#E40009" strokeWidth={2} />
+                                    <Cell key={'cell-0'} fill="#ECC0E8" stroke="#AA62A4" strokeWidth={2} />
+                                    <Cell key={'cell-0'} fill="#FFDABC" stroke="#FD760A" strokeWidth={2} />
+                                    <Cell key={'cell-0'} fill="#8BD7A4" stroke="#049334" strokeWidth={2} />
+                                    <Cell key={'cell-0'} fill="#DEC3A3" stroke="#9B692C" strokeWidth={2} />
+                                </Bar>
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </GraphBox>
                 </Container>
                 <Box position="absolute" bottom="0" left="0" width="100%" height="90px" bgColor={purple}>
                     <Box position="absolute" top="0" left="50%" width="4xl" height="100%" transform="translateX(-50%)">
