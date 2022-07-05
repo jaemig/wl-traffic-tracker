@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import TabItem from './comps/TabItem';
 import { TabValues } from './constants';
 import StatItem from './comps/StatItem';
+import axios, { AxiosResponse } from 'axios';
 
 import "@fontsource/montserrat/variable.css";
 import "@fontsource/inter/variable.css";
@@ -14,6 +15,7 @@ import AlertIcon from '../assets/alert_red.svg';
 import WarnIcon from '../assets/alert_yellow.svg';
 import ElevatorIcon from '../assets/elevator.png';
 import EscalatorIcon from '../assets/escalator.png';
+import ReportIcon from '../assets/report.png';
 import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
 import CircleSwitchItem from './comps/CircleSwitchItem';
 import GraphBox from './comps/GraphBox';
@@ -273,6 +275,17 @@ const App: FC = () => {
     const disruption_length_colors = ['#EB4E87', '#3C73A7', '#FD760A'];
     const MAX_WIDTH = '5xl';
 
+    useEffect(() => {
+        const graph_cookie = Number(Cookies.get('graph_tab'));
+        if (graph_cookie && !isNaN(graph_cookie) && graph_cookie >= 1 && graph_cookie <= 3) setSelectedGraphTab(Number(graph_cookie.toFixed(0)) as any);
+        const timerange_cookie = Cookies.get('tr_tab');
+        if (timerange_cookie && (timerange_cookie === 'd' || timerange_cookie === 'w' || timerange_cookie === 'm' || timerange_cookie === 'y')) setSelectedTab(timerange_cookie);
+    }, [])
+
+    useEffect(() => {
+        getData();
+    }, [selectedTab, setSelectedTab])
+
     const handleTabSelection = (e: MouseEvent, id?: TabValues) => {
         const target_tab = id ?? 'd';
         Cookies.set('tr_tab', target_tab);
@@ -293,12 +306,36 @@ const App: FC = () => {
         return (<text x={x} y={y} fill={line_type_ranking_colors[index % 3]} textAnchor={ x > cx ? 'start' : 'end' } dominantBaseline="central" fontFamily='InterVariable' fontSize='12px' >{ line_type_ranking_data[index].name }</text>);
     }
 
-    useEffect(() => {
-        const graph_cookie = Number(Cookies.get('graph_tab'));
-        if (graph_cookie && !isNaN(graph_cookie) && graph_cookie >= 1 && graph_cookie <= 3) setSelectedGraphTab(Number(graph_cookie.toFixed(0)) as any);
-        const timerange_cookie = Cookies.get('tr_tab');
-        if (timerange_cookie && (timerange_cookie === 'd' || timerange_cookie === 'w' || timerange_cookie === 'm' || timerange_cookie === 'y')) setSelectedTab(timerange_cookie);
-    }, [])
+    const getData = ():void => {
+        axios.get('/api/data', { params: { timerange: selectedTab }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
+        .then((res: AxiosResponse) => {
+            if (res.status === 200)
+            {
+                console.log(res.data);
+                const update_time_elmnt = document.querySelector<HTMLSpanElement>('#last-request span');
+                if (update_time_elmnt) update_time_elmnt.textContent = res.data.last_request;
+
+                const stat_disturbances = document.querySelector('#stat-disturbances .stat-item-value');
+                if (stat_disturbances) stat_disturbances.textContent = res.data.nof_disturbances.val;
+                const stat_delays = document.querySelector('#stat-delays .stat-item-value');
+                if (stat_delays) stat_delays.textContent = res.data.nof_delays.val;
+                const stat_elevators = document.querySelector('#stat-elevators .stat-item-value');
+                if (stat_elevators) stat_elevators.textContent = res.data.nof_elevators.val;
+                const stat_reports = document.querySelector('#stat-reports .stat-item-value');
+                if (stat_reports) stat_reports.textContent = res.data.nof_reports.val;
+
+                const stat_disturbances_compare = document.querySelector('#stat-disturbances .stat-item-percentage');
+                if (stat_disturbances_compare) stat_disturbances_compare.textContent = res.data.nof_disturbances.compare;
+                const stat_delays_compare = document.querySelector('#stat-delays .stat-item-percentage');
+                if (stat_delays_compare) stat_delays_compare.textContent = res.data.nof_delays.compare;
+                const stat_elevators_compare = document.querySelector('#stat-elevators .stat-item-percentage');
+                if (stat_elevators_compare) stat_elevators_compare.textContent = res.data.nof_elevators.compare;
+                const stat_reports_compare = document.querySelector('#stat-reports .stat-item-percentage');
+                if (stat_reports_compare) stat_reports_compare.textContent = res.data.nof_reports.compare;
+            }
+        })
+        .catch(() => {})
+    }
 
     const render = () => {
         return (
@@ -323,6 +360,7 @@ const App: FC = () => {
                             WLTT
                         </Heading>
                         <Box
+                            id="last-request"
                             bgColor={purple}
                             color="white"
                             fontFamily="InterVariable"
@@ -337,7 +375,7 @@ const App: FC = () => {
                             }}
                             transition="all .15s ease"
                             cursor="default"
-                        >LAST UPDATE: 26.05.2022 10.30PM</Box>
+                        >LETZTES UPDATE: <span>26.05.2022 10.30PM</span></Box>
                     </Flex>
                 </Box>
                 <Center marginTop="50px">
@@ -358,10 +396,10 @@ const App: FC = () => {
                 </Center>
                 <Container maxW={MAX_WIDTH} mt="75px">
                     <Flex justifyContent="space-between" fontFamily="InterVariable">
-                        <StatItem label='Störungen' number={5} percentage="23.36" iconPath={AlertIcon} iconAlt={"Red alert icon"} increase />
-                        <StatItem label='Verspätungen' number={8} percentage="8.05" iconPath={WarnIcon} iconAlt={"Yellow warn icon"} />
-                        <StatItem label='Defekte Aufzüge' number={6} percentage="14.97" iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} increase />
-                        <StatItem label='Defekte Rolltreppen' number={14} percentage="11.25" iconPath={EscalatorIcon} iconAlt={"Escalator symbole with one person"} increase />
+                        <StatItem id="stat-disturbances" label='Störungen' number={5} percentage="23.36" iconPath={AlertIcon} iconAlt={"Red alert icon"} increase />
+                        <StatItem id="stat-delays" label='Verspätungen' number={8} percentage="8.05" iconPath={WarnIcon} iconAlt={"Yellow warn icon"} />
+                        <StatItem id="stat-elevators" label='Defekte Aufzüge' number={6} percentage="14.97" iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} increase />
+                        <StatItem id="stat-reports" label='Meldungen Gesamt' number={14} percentage="11.25" iconPath={ReportIcon} iconAlt={"Blue report symbole"} increase />
                     </Flex>
                 </Container>
                 <Container maxW={MAX_WIDTH} mt="70px" fontFamily="InterVariable" position="relative">

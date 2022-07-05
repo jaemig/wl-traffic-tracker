@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\WlttController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,6 @@ use App\Http\Controllers\ReportController;
 
 Route::get('/check-report', [ReportController::class, 'checkTrafficReport'])
     ->middleware('throttle:report');
+
+Route::get('/data', [WlttController::class, 'getReportData'])
+    ->middleware('throttle:data');

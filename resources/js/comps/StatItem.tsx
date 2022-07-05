@@ -2,6 +2,7 @@ import { Box, Stat, StatArrow, StatHelpText, StatLabel, StatNumber, Image, Text 
 import React, { FC } from 'react';
 
 interface IStatItemProps {
+    id?: string
     label?: string
     number?: number
     increase?: boolean
@@ -10,11 +11,12 @@ interface IStatItemProps {
     iconAlt?: string
 }
 
-const StatItem: FC<IStatItemProps> = ({ label, number, increase, percentage, iconPath, iconAlt }) => {
+const StatItem: FC<IStatItemProps> = ({ id, label, number, increase, percentage, iconPath, iconAlt }) => {
 
     const render = () => {
         return (
             <Stat
+                id={id}
                 border="1px solid"
                 borderRadius="12px"
                 borderColor="gray.200"
@@ -32,9 +34,9 @@ const StatItem: FC<IStatItemProps> = ({ label, number, increase, percentage, ico
                         iconPath && <Image src={iconPath} boxSize="15px" display="inline-block" position="relative" ml="5px" top="2px" fill="red" alt={iconAlt} />
                     }
                 </StatLabel>
-                <StatNumber fontWeight="600">{ number }</StatNumber>
+                <StatNumber className='stat-item-value' fontWeight="600">{ number }</StatNumber>
                 <StatHelpText>
-                    <StatArrow type={increase ? "increase" : "decrease"} />{ percentage }%
+                    <StatArrow type={increase ? "increase" : "decrease"} /><span className='stat-item-percentage'>{ percentage }</span>%
                 </StatHelpText>
             </Stat>
         )
