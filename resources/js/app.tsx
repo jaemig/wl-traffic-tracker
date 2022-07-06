@@ -268,6 +268,191 @@ const disruption_timerange_data = [
 const App: FC = () => {
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
     const [selectedGraphTab, setSelectedGraphTab] = useState<1 | 2 | 3>(1);
+    const [reportHistoryData, setReportHistoryData] = useState([
+        {
+            name: 0,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 1,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 2,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 3,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 4,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 5,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 6,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 7,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 8,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 9,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 10,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 11,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 12,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 13,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 14,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 15,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 16,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 17,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 18,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 19,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 20,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 21,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 22,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 23,
+            disturbances: 0,
+            delays: 0
+        },
+
+    ]);
+    const [reportRankingData, setReportRankingData] = useState([
+        {
+            name: 'U1',
+            reports: 0
+        },
+        {
+            name: 'U2',
+            reports: 0
+        },
+        {
+            name: 'U3',
+            reports: 0
+        },
+        {
+            name: 'U4',
+            reports: 0
+        },
+        {
+            name: 'U5',
+            reports: 0
+        },
+        {
+            name: 'U6',
+            reports: 0
+        }
+    ])
+    const [reportLineTypesData, setReportLineTypesData] = useState([
+        {
+            name: 'U-Bahn',
+            reports: 34,
+        },
+        {
+            name: 'Str.-Bahn',
+            reports: 33,
+        },
+        {
+            name: 'Bus',
+            reports: 33,
+        }
+    ])
+    const [reportTypesData, setReportTypesData] = useState([
+        {
+            name: 'Einsätze',
+            reports: 20
+        },
+        {
+            name: 'Gleisarbeiten',
+            reports: 20
+        },
+        {
+            name: 'Schadhaftes Fahrzeug',
+            reports: 20
+        },
+        {
+            name: 'Verkehrsbehinderung',
+            reports: 20
+        },
+        {
+            name: 'Sonstiges',
+            reports: 20
+        }
+    ])
 
     const purple = useColorModeValue('#040244', '#040244');
     const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
@@ -299,11 +484,11 @@ const App: FC = () => {
 
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, index}: {cx: number, cy: number, midAngle: number, innerRadius: number, outerRadius: number, index: number}) => {
         const radian = Math.PI / 180;
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.3;
         const x = cx + radius * Math.cos(-midAngle * radian);
         const y = cy + radius * Math.sin(-midAngle * radian);
 
-        return (<text x={x} y={y} fill={line_type_ranking_colors[index % 3]} textAnchor={ x > cx ? 'start' : 'end' } dominantBaseline="central" fontFamily='InterVariable' fontSize='12px' >{ line_type_ranking_data[index].name }</text>);
+        return (<text x={x} y={y} fill={line_type_ranking_colors[index % 3]} textAnchor={ x > cx ? 'start' : 'end' } dominantBaseline="central" fontFamily='InterVariable' fontSize='12px' >{ reportLineTypesData[index].name }</text>);
     }
 
     const getData = ():void => {
@@ -332,6 +517,11 @@ const App: FC = () => {
                 if (stat_elevators_compare) stat_elevators_compare.textContent = res.data.nof_elevators.compare;
                 const stat_reports_compare = document.querySelector('#stat-reports .stat-item-percentage');
                 if (stat_reports_compare) stat_reports_compare.textContent = res.data.nof_reports.compare;
+
+                setReportHistoryData(res.data.report_history);
+                setReportRankingData(res.data.report_ranking);
+                setReportLineTypesData(res.data.report_line_types);
+                setReportTypesData(res.data.report_types);
             }
         })
         .catch(() => {})
@@ -413,7 +603,7 @@ const App: FC = () => {
                             >
                                 <ResponsiveContainer width="103%" height="87%">
                                     <AreaChart
-                                        data={ex_chart_data}
+                                        data={reportHistoryData}
                                         style={{ marginLeft: '-20px' }}
                                     >
                                         <defs>
@@ -428,8 +618,8 @@ const App: FC = () => {
                                         </defs>
                                         <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                                         <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
-                                        <Area type="monotone" dataKey="uv" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
-                                        <Area type="monotone" dataKey="pv" stackId="1" stroke="#00509D" fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                                        <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
+                                        <Area type="monotone" dataKey="delays" stackId="1" stroke="#00509D" fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </GraphBox>
@@ -442,10 +632,10 @@ const App: FC = () => {
                                 title='Meldeursachen'
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="request-ranking">
-                                    <RadarChart cx='50%' cy='50%' outerRadius='80%' data={request_ranking_data}>
+                                    <RadarChart cx='50%' cy='50%' outerRadius='80%' data={reportTypesData}>
                                         <PolarGrid enableBackground={'red'} />
-                                        <PolarAngleAxis dataKey="subject" fontFamily='InterVariable' fontSize='12px' />
-                                        <Radar name="Mike" dataKey="A" stroke="#00509D" strokeWidth={2} fill="#00509D" fillOpacity={0.6} />
+                                        <PolarAngleAxis dataKey="name" fontFamily='InterVariable' fontSize='12px' />
+                                        <Radar name="Meldeursachen" dataKey="reports" stroke="#00509D" strokeWidth={2} fill="#00509D" fillOpacity={0.6} />
                                     </RadarChart>
                                 </ResponsiveContainer>
                             </GraphBox>
@@ -499,13 +689,13 @@ const App: FC = () => {
                                 <ResponsiveContainer width="105%" height="87%" id="subway-ranking">
                                     <ComposedChart
                                         layout="vertical"
-                                        data={melde_ranking_data}
+                                        data={reportRankingData}
                                         style={{ marginLeft: '-40px', marginTop: '25px' }}
                                     >
                                         <CartesianGrid horizontal={false} strokeDasharray="5" opacity={0.5} />
                                         <XAxis type="number" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                                         <YAxis dataKey="name" type="category" scale="band" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" interval={0} />
-                                        <Bar dataKey="uv" barSize={20} radius={[0, 3, 3, 0]}>
+                                        <Bar dataKey="reports" barSize={20} radius={[0, 3, 3, 0]}>
                                             <Cell key={'cell-0'} fill="#F49397" stroke="#E40009" strokeWidth={2} />
                                             <Cell key={'cell-0'} fill="#ECC0E8" stroke="#AA62A4" strokeWidth={2} />
                                             <Cell key={'cell-0'} fill="#FFDABC" stroke="#FD760A" strokeWidth={2} />
@@ -526,17 +716,18 @@ const App: FC = () => {
                                 <ResponsiveContainer width="105%" height="87%" id="line_type_ranking">
                                     <PieChart>
                                         <Pie
-                                            data={line_type_ranking_data}
+                                            data={reportLineTypesData}
                                             cx='50%'
                                             cy='50%'
                                             labelLine={false}
                                             label={renderCustomizedLabel}
                                             outerRadius={80}
                                             fillOpacity={0.2}
-                                            dataKey="value"
+                                            isAnimationActive={false}
+                                            dataKey="reports"
                                         >
                                             {
-                                                line_type_ranking_data.map((entry, idx) => {
+                                                reportLineTypesData.map((entry, idx) => {
                                                     const color = line_type_ranking_colors[idx % 3];
                                                     return <Cell key={idx} fill={color} stroke={color} strokeWidth={2} />;
                                                 })
