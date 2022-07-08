@@ -11,7 +11,7 @@ WLTT is a web application for tracking and monitoring disruptions and delays of 
 - Broken elevators and escalators
 
 ## Displayed informations
-- Choice between different timeranges (day, week, month and year)
+- Choice between different time ranges (day, week, month and year)
 - Current number of disruptions, delays, broken elevators and reports (including a comparison to the selected time range).
 - Report history of disruptions and delays grouped by time
 - Report ranking for every metro line
