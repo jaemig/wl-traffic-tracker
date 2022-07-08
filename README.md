@@ -1,3 +1,4 @@
+[Image](./resources/github/brand.svg)
 <h1 align="center">Wiener Linien Traffic Tracker</h1>
 
 ## About WLTT
