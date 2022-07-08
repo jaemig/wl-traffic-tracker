@@ -21,249 +21,7 @@ import CircleSwitchItem from './comps/CircleSwitchItem';
 import GraphBox from './comps/GraphBox';
 import Cookies from 'js-cookie';
 
-const ex_chart_data = [
-    {
-      name: '1',
-      uv: 4000,
-      pv: 2400,
-    },
-    {
-      name: '2',
-      uv: 3000,
-      pv: 1398,
-    },
-    {
-      name: '3',
-      uv: 2000,
-      pv: 9800,
-    },
-    {
-      name: '4',
-      uv: 2780,
-      pv: 3908,
-    },
-    {
-      name: '5',
-      uv: 1890,
-      pv: 4800,
-    },
-    {
-      name: '6',
-      uv: 2390,
-      pv: 3800,
-    },
-    {
-      name: '7',
-      uv: 3490,
-      pv: 4300,
-    },
-  ];
-
-const melde_ranking_data = [
-{
-    name: 'U1',
-    uv: 590,
-    pv: 800,
-},
-{
-    name: 'U2',
-    uv: 868,
-    pv: 967,
-},
-{
-    name: 'U3',
-    uv: 1397,
-    pv: 1098,
-},
-{
-    name: 'U4',
-    uv: 1480,
-    pv: 1200,
-},
-{
-    name: 'U6',
-    uv: 1520,
-    pv: 1108,
-},
-];
-
-
-const request_ranking_data = [
-    {
-      subject: 'Math',
-      A: 120,
-      B: 110,
-      fullMark: 150,
-    },
-    {
-      subject: 'Chinese',
-      A: 98,
-      B: 130,
-      fullMark: 150,
-    },
-    {
-      subject: 'English',
-      A: 86,
-      B: 130,
-      fullMark: 150,
-    },
-    {
-      subject: 'Geography',
-      A: 99,
-      B: 100,
-      fullMark: 150,
-    },
-    {
-      subject: 'Physics',
-      A: 85,
-      B: 90,
-      fullMark: 150,
-    },
-    {
-      subject: 'History',
-      A: 65,
-      B: 85,
-      fullMark: 150,
-    },
-];
-
-const line_type_ranking_data = [
-    { name: 'Group A', value: 400 },
-    { name: 'Group B', value: 300 },
-    { name: 'Group C', value: 300 },
-];
-
-const disruption_length_data = [
-    { x: 100, y: 200, z: 200 },
-    { x: 120, y: 100, z: 260 },
-    { x: 170, y: 300, z: 400 },
-    { x: 140, y: 250, z: 280 },
-    { x: 150, y: 400, z: 500 },
-    { x: 110, y: 280, z: 200 },
-  ];
-
-const disruption_timerange_data = [
-    {
-        "name": "0",
-        "disruption": 26.607425219052327,
-        "delay": 32.405815892482316
-    },
-    {
-        "name": "1",
-        "disruption": 25.20736262375062,
-        "delay": 48.05101945242035
-    },
-    {
-        "name": "2",
-        "disruption": 28.394898176644524,
-        "delay": 46.47085691202327
-    },
-    {
-        "name": "3",
-        "disruption": 31.65185373518512,
-        "delay": 48.91590600780881
-    },
-    {
-        "name": "4",
-        "disruption": 27.023210054020307,
-        "delay": 41.26937471778071
-    },
-    {
-        "name": "5",
-        "disruption": 36.20004580147613,
-        "delay": 27.544083610896415
-    },
-    {
-        "name": "6",
-        "disruption": 38.885292114825546,
-        "delay": 42.96156697752656
-    },
-    {
-        "name": "7",
-        "disruption": 29.59949978713714,
-        "delay": 36.79792844030633
-    },
-    {
-        "name": "8",
-        "disruption": 29.09632770045838,
-        "delay": 38.240637893996166
-    },
-    {
-        "name": "9",
-        "disruption": 26.77941839643751,
-        "delay": 44.22966038419081
-    },
-    {
-        "name": "10",
-        "disruption": 32.13648684042911,
-        "delay": 26.31184906440759
-    },
-    {
-        "name": "11",
-        "disruption": 31.030152665459266,
-        "delay": 49.354323112594756
-    },
-    {
-        "name": "12",
-        "disruption": 34.697260423144,
-        "delay": 42.90840678505417
-    },
-    {
-        "name": "13",
-        "disruption": 34.995012572659384,
-        "delay": 41.57104334549709
-    },
-    {
-        "name": "14",
-        "disruption": 27.71637686701565,
-        "delay": 45.14798368544685
-    },
-    {
-        "name": "15",
-        "disruption": 34.50600119355883,
-        "delay": 33.722424394672835
-    },
-    {
-        "name": "16",
-        "disruption": 26.74067665162432,
-        "delay": 29.25616320095394
-    },
-    {
-        "name": "17",
-        "disruption": 49.90944794066369,
-        "delay": 28.367242112140694
-    },
-    {
-        "name": "18",
-        "disruption": 49.74594749582774,
-        "delay": 30.39433928358935
-    },
-    {
-        "name": "19",
-        "disruption": 46.68752872739798,
-        "delay": 34.97078883455171
-    },
-    {
-        "name": "20",
-        "disruption": 32.473742828504506,
-        "delay": 41.66796952704968
-    },
-    {
-        "name": "21",
-        "disruption": 38.53624589637069,
-        "delay": 27.811441535253252
-    },
-    {
-        "name": "22",
-        "disruption": 48.01751521759766,
-        "delay": 25.137263421431815
-    },
-    {
-        "name": "23",
-        "disruption": 40.06361496380794,
-        "delay": 31.248169076431854
-    }
-]
+let active_request = false;
 
 const App: FC = () => {
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
@@ -453,28 +211,104 @@ const App: FC = () => {
             reports: 20
         }
     ])
+    const [disruptionLengthData, setDisturbanceLengthData] = useState([
+        { name: 'U-Bahn', x: 100, y: 200 },
+        { name: 'U-Bahn', x: 120, y: 100 },
+        { name: 'Straßenbahn', x: 170, y: 300 },
+        { name: 'Straßenbahn', x: 140, y: 250 },
+        { name: 'Bus', x: 150, y: 400 },
+        { name: 'Bus', x: 110, y: 180 },
+    ])
+    const [disturbanceMonthData, setDisturbanceMonthData] = useState([
+        {
+            name: 1,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 2,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 3,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 4,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 5,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 6,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 7,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 8,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 9,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 10,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 11,
+            disturbances: 0,
+            delays: 0
+        },
+        {
+            name: 12,
+            disturbances: 0,
+            delays: 0
+        }
+    ])
+    const [hasDataLoaded, setHasDataLoaded] = useState(false);
 
     const purple = useColorModeValue('#040244', '#040244');
     const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
     const line_type_ranking_colors = ['#00509D', '#EA0054', '#FD760A'];
-    const disruption_length_colors = ['#EB4E87', '#3C73A7', '#FD760A'];
+    const disruption_length_colors = {'U-Bahn': '#EB4E87', 'Straßenbahn': '#3C73A7', 'Bus': '#FD760A'};
     const MAX_WIDTH = '5xl';
 
     useEffect(() => {
         const graph_cookie = Number(Cookies.get('graph_tab'));
         if (graph_cookie && !isNaN(graph_cookie) && graph_cookie >= 1 && graph_cookie <= 3) setSelectedGraphTab(Number(graph_cookie.toFixed(0)) as any);
         const timerange_cookie = Cookies.get('tr_tab');
-        if (timerange_cookie && (timerange_cookie === 'd' || timerange_cookie === 'w' || timerange_cookie === 'm' || timerange_cookie === 'y')) setSelectedTab(timerange_cookie);
+        if (timerange_cookie && (timerange_cookie === 'd' || timerange_cookie === 'w' || timerange_cookie === 'm' || timerange_cookie === 'y'))
+        {
+            setSelectedTab(timerange_cookie);
+            getData(timerange_cookie);
+        }
     }, [])
 
-    useEffect(() => {
-        getData();
-    }, [selectedTab, setSelectedTab])
+    // useEffect(() => {
+    //     getData();
+    // }, [selectedTab, setSelectedTab])
 
     const handleTabSelection = (e: MouseEvent, id?: TabValues) => {
         const target_tab = id ?? 'd';
         Cookies.set('tr_tab', target_tab);
         setSelectedTab(target_tab);
+        getData(target_tab);
     }
 
     const handelGraphTabSelection = (e: MouseEvent, id: 1 | 2 | 3) => {
@@ -491,8 +325,10 @@ const App: FC = () => {
         return (<text x={x} y={y} fill={line_type_ranking_colors[index % 3]} textAnchor={ x > cx ? 'start' : 'end' } dominantBaseline="central" fontFamily='InterVariable' fontSize='12px' >{ reportLineTypesData[index].name }</text>);
     }
 
-    const getData = ():void => {
-        axios.get('/api/data', { params: { timerange: selectedTab }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
+    const getData = (selected_timerange?: TabValues):void => {
+        if (active_request) return;
+        active_request = true;
+        axios.get('/api/data', { params: { timerange: selected_timerange ?? selectedTab }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
         .then((res: AxiosResponse) => {
             if (res.status === 200)
             {
@@ -522,9 +358,13 @@ const App: FC = () => {
                 setReportRankingData(res.data.report_ranking);
                 setReportLineTypesData(res.data.report_line_types);
                 setReportTypesData(res.data.report_types);
+                setDisturbanceLengthData(res.data.disturbance_length);
+                setDisturbanceMonthData(res.data.disturbance_months);
+                if (!hasDataLoaded) setHasDataLoaded(true);
             }
         })
-        .catch(() => {})
+        .catch(() => { })
+        .finally(() => { active_request = false; })
     }
 
     const render = () => {
@@ -564,12 +404,13 @@ const App: FC = () => {
                                 transform: "scale(1.1)"
                             }}
                             transition="all .15s ease"
-                            cursor="default"
+                            cursor="pointer"
+                            onClick={() => getData()}
                         >LETZTES UPDATE: <span>26.05.2022 10.30PM</span></Box>
                     </Flex>
                 </Box>
                 <Center marginTop="50px">
-                    <Flex color="white" fontFamily="InterVariable" fontWeight="bold" fontSize="16px" justifyContent="space-between">
+                    <Flex color="white" fontFamily="InterVariable" fontWeight="bold" fontSize="16px" justifyContent="space-between" userSelect="none">
                         <TabItem selected={selectedTab === 'd'} primColor={purple} onClick={handleTabSelection} id='d'>
                             Tag
                         </TabItem>
@@ -600,6 +441,7 @@ const App: FC = () => {
                                 height="240px"
                                 title='Meldungsverlauf'
                                 labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: '#00509D'}]}
+                                hasDataLoaded={hasDataLoaded}
                             >
                                 <ResponsiveContainer width="103%" height="87%">
                                     <AreaChart
@@ -630,6 +472,8 @@ const App: FC = () => {
                                 width='calc(50% - 20px)'
                                 height='240px'
                                 title='Meldeursachen'
+                                hasDataLoaded={hasDataLoaded}
+                                skeletonHeight='86%'
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="request-ranking">
                                     <RadarChart cx='50%' cy='50%' outerRadius='80%' data={reportTypesData}>
@@ -647,6 +491,7 @@ const App: FC = () => {
                                 height='240px'
                                 title='Störungslängen'
                                 labels={ [{name: 'U-Bahn', color: '#EB4E87'}, { name: 'Straßenbahn', color: '#3C73A7' }, { name: 'Bus', color: '#FD760A' }] }
+                                hasDataLoaded={hasDataLoaded}
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="request-ranking">
                                     <ScatterChart
@@ -655,10 +500,10 @@ const App: FC = () => {
                                         <CartesianGrid strokeDasharray="5" opacity={0.5} />
                                         <XAxis type="number" dataKey="x" tickLine={false} name="stature" fontFamily="InterVariable" fontSize="12px" />
                                         <YAxis type="number" dataKey="y" tickLine={false} name="weight" fontFamily="InterVariable" fontSize="12px" />
-                                        <Scatter name="A school" data={disruption_length_data} fill="#8884d8">
+                                        <Scatter name="A school" data={disruptionLengthData} fill="#8884d8">
                                             {
-                                                disruption_length_data.map((entry, idx) => (
-                                                    <Cell key={idx} fill={disruption_length_colors[idx % 3]} />
+                                                disruptionLengthData.map((entry, idx) => (
+                                                    <Cell key={idx} fill={disruption_length_colors[entry.name as 'Straßenbahn' | 'U-Bahn' | 'Bus']} />
                                                 ))
                                             }
                                         </Scatter>
@@ -685,6 +530,8 @@ const App: FC = () => {
                                 width='calc(50% - 40px)'
                                 height='240px'
                                 title="Melde-Ranking (U-Bahn)"
+                                hasDataLoaded={hasDataLoaded}
+                                skeletonHeight='86%'
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="subway-ranking">
                                     <ComposedChart
@@ -712,6 +559,8 @@ const App: FC = () => {
                                 width='calc(50% - 40px)'
                                 height='240px'
                                 title='Meldungen nach Linientyp'
+                                hasDataLoaded={hasDataLoaded}
+                                skeletonHeight='86%'
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="line_type_ranking">
                                     <PieChart>
@@ -742,12 +591,13 @@ const App: FC = () => {
                             <GraphBox
                             width='calc(50% - 40px)'
                             height="240px"
-                            title='Störungen nach Uhrzeit'
+                            title='Störungen nach Monat'
                             labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: '#00509D'}]}
+                            hasDataLoaded={hasDataLoaded}
                             >
                                 <ResponsiveContainer width="103%" height="87%">
                                     <AreaChart
-                                        data={disruption_timerange_data}
+                                        data={disturbanceMonthData}
                                         style={{ marginLeft: '-20px' }}
                                     >
                                         <defs>
@@ -762,8 +612,8 @@ const App: FC = () => {
                                         </defs>
                                         <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                                         <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
-                                        <Area type="monotone" dataKey="disruption" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
-                                        <Area type="monotone" dataKey="delay" stackId="1" stroke="#00509D" fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                                        <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
+                                        <Area type="monotone" dataKey="delays" stackId="1" stroke="#00509D" fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </GraphBox>

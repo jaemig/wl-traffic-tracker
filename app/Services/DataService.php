@@ -100,10 +100,10 @@ class DataService {
         )[0]
             ->NofReports;
 
-        $data->nof_disturbances = ['val' => $nof_disturbances, 'compare' => round($nof_disturbances / $compare_nof_disturbances * 100, 2)];
-        $data->nof_delays = ['val' => $nof_delays, 'compare' => round($nof_delays / $compare_nof_delays * 100, 2)];
-        $data->nof_elevators = ['val' => $nof_elevators, 'compare' => round($nof_elevators / $compare_nof_elevators * 100, 2)];
-        $data->nof_reports = ['val' => $nof_reports, 'compare' => round($nof_reports / $compare_nof_reports * 100, 2)];
+        $data->nof_disturbances = ['val' => $nof_disturbances, 'compare' => round($nof_disturbances / ($compare_nof_disturbances > 0 ? $compare_nof_disturbances : 1)  * 100, 2)];
+        $data->nof_delays = ['val' => $nof_delays, 'compare' => round($nof_delays / ($compare_nof_delays > 0 ? $compare_nof_delays : 1) * 100, 2)];
+        $data->nof_elevators = ['val' => $nof_elevators, 'compare' => round($nof_elevators / ($compare_nof_elevators > 0 ? $compare_nof_elevators : 1) * 100, 2)];
+        $data->nof_reports = ['val' => $nof_reports, 'compare' => round($nof_reports / ($compare_nof_reports > 0 ? $compare_nof_reports : 1) * 100, 2)];
 
 
         // Report history of the last 24 hours
@@ -186,16 +186,51 @@ class DataService {
             ]
         );
 
-        // $disturbance_lengths = array(
-        //     [
-        //         'name' =>
-        //     ]
-        // )
+        $disturbance_lengths = array();
+
+        $disturbances_subway = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%verspätung%') AND (title LIKE '%u1' OR title LIKE '%u2%' OR title LIKE '%u3%' OR title LIKE '%u4%' OR title LIKE '%u6%' OR description LIKE '%u1%' OR description LIKE '%u2%' OR description LIKE '%u3%' OR description LIKE '%u4%' OR description LIKE '%u6%')",
+            ['tr_start' => $timerange_start->format('Y-m-d')]
+        );
+        foreach ($disturbances_subway as $disturbance)
+        {
+            $record = array('name' => 'U-Bahn', 'x' => $disturbance->hour, 'y' => $disturbance->duration);
+            array_push($disturbance_lengths, $record);
+        }
+
+        $disturbances_tram = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%straßenbahn%' OR description LIKE '%straßenbahn%')", ['tr_start' => $timerange_start->format('Y-m-d')]);
+        foreach ($disturbances_tram as $disturbance)
+        {
+            $record = array('name' => 'Straßenbahn', 'x' => $disturbance->hour, 'y' => $disturbance->duration);
+            array_push($disturbance_lengths, $record);
+        }
+
+        $disturbances_bus = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%bus%' OR description LIKE '%bus%')", ['tr_start' => $timerange_start->format('Y-m-d')]);
+        foreach ($disturbances_bus as $disturbance)
+        {
+            $record = array('name' => 'Bus', 'x' => $disturbance->hour, 'y' => $disturbance->duration);
+            array_push($disturbance_lengths, $record);
+        }
+
+        $disturbances_month = array();
+
+
+        for ($i = 1; $i <= 12; $i++)
+        {
+            $month = array(
+                'name' => $i,
+                'disturbances' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%m') = :month AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%')", ['month' => str_pad($i, 2, '0', STR_PAD_LEFT)])[0]->count,
+                'delays' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(time_start, '%m') = :month AND (title LIKE '%verspätung%' OR description LIKE '%verspätung%')", ['month' => str_pad($i, 2, '0', STR_PAD_LEFT)])[0]->count
+            );
+            array_push($disturbances_month, $month);
+        }
+
 
         $data->report_history = $report_history;
         $data->report_ranking = $report_ranking;
         $data->report_line_types = $report_line_types;
         $data->report_types = $report_types;
+        $data->disturbance_length = $disturbance_lengths;
+        $data->disturbance_months = $disturbances_month;
 
         return $data;
     }

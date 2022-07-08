@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, Text } from "@chakra-ui/react";
+import { Box, Heading, HStack, Skeleton, Text } from "@chakra-ui/react";
 import React, { FC, ReactNode } from "react";
 
 
@@ -7,10 +7,12 @@ interface IGraphBoxProps {
     height: string
     title: string
     labels?: { name: string; color: string; }[]
-    children?: React.ReactNode
+    children?: React.ReactNode,
+    hasDataLoaded?: boolean,
+    skeletonHeight?: string
 }
 
-const GraphBox: FC<IGraphBoxProps> = ({ width, height, title, labels, children }) => {
+const GraphBox: FC<IGraphBoxProps> = ({ width, height, title, labels, children, hasDataLoaded, skeletonHeight }) => {
 
     const render = () => {
 
@@ -60,7 +62,11 @@ const GraphBox: FC<IGraphBoxProps> = ({ width, height, title, labels, children }
             >
                 <Heading fontSize="18px" fontWeight="medium">{ title }</Heading>
                 { label_output }
-                { children }
+                {
+                    hasDataLoaded
+                    ? children
+                    : <Skeleton height={skeletonHeight ?? "75%"} marginTop="5px" marginBottom="5px" borderRadius="md" />
+                }
             </Box>
         )
     }
