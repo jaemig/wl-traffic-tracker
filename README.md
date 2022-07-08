@@ -1,4 +1,4 @@
-[Image](https://github.com/Jan-Emig/wl-traffic-tracker/blob/main/resources/github/brand.svg)
+[Image](https://raw.githubusercontent.com/Jan-Emig/wl-traffic-tracker/main/resources/github/brand.svg)
 <h1 align="center">Wiener Linien Traffic Tracker</h1>
 
 ## About WLTT
