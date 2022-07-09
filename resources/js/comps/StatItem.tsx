@@ -1,4 +1,4 @@
-import { Box, Stat, StatArrow, StatHelpText, StatLabel, StatNumber, Image, Text } from '@chakra-ui/react';
+import { Box, Stat, StatArrow, StatHelpText, StatLabel, StatNumber, Image, Text, Skeleton } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
 interface IStatItemProps {
@@ -6,12 +6,13 @@ interface IStatItemProps {
     label?: string
     number?: number
     increase?: boolean
-    percentage: string
+    percentage: number
     iconPath?: any
-    iconAlt?: string
+    iconAlt?: string,
+    hasDataLoaded?: boolean
 }
 
-const StatItem: FC<IStatItemProps> = ({ id, label, number, increase, percentage, iconPath, iconAlt }) => {
+const StatItem: FC<IStatItemProps> = ({ id, label, number, increase, percentage, iconPath, iconAlt, hasDataLoaded }) => {
 
     const render = () => {
         return (
@@ -34,9 +35,20 @@ const StatItem: FC<IStatItemProps> = ({ id, label, number, increase, percentage,
                         iconPath && <Image src={iconPath} boxSize="15px" display="inline-block" position="relative" ml="5px" top="2px" fill="red" alt={iconAlt} />
                     }
                 </StatLabel>
-                <StatNumber className='stat-item-value' fontWeight="600">{ number }</StatNumber>
+                {
+                    hasDataLoaded
+                    ?
+                    <StatNumber className='stat-item-value' fontWeight="600">{ number ?? '-' }</StatNumber>
+                    : <Skeleton mt="5px" height="30px" width="75px"></Skeleton>
+                }
                 <StatHelpText>
-                    <StatArrow type={increase ? "increase" : "decrease"} /><span className='stat-item-percentage'>{ percentage }</span>%
+                    {
+                        hasDataLoaded
+                        ? <>
+                            <StatArrow type={ (increase || percentage && percentage >= 0) ? "increase" : "decrease"} /><span className='stat-item-percentage'>{ (percentage && !isNaN(percentage)) ? Math.abs(percentage) : '-' } </span>%
+                          </>
+                        : <Skeleton mt="10px" height="10px" width="75px"></Skeleton>
+                    }
                 </StatHelpText>
             </Stat>
         )

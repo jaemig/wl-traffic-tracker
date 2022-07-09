@@ -1,4 +1,4 @@
-import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox } from '@chakra-ui/react';
+import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton } from '@chakra-ui/react';
 import React, { FC, MouseEvent, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import TabItem from './comps/TabItem';
@@ -26,6 +26,8 @@ let active_request = false;
 const App: FC = () => {
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
     const [selectedGraphTab, setSelectedGraphTab] = useState<1 | 2 | 3>(1);
+    const [statData, setStatData] = useState({disruptions: {val: 5, change: 23.36} , delays: {val: 8, change: 8.05}, elevators: {val: 6, change: 14.97 }, total: { val: 14, change: 11.25} })
+    const [lastRequest, setLastRequest] = useState('-');
     const [reportHistoryData, setReportHistoryData] = useState([
         {
             name: 0,
@@ -292,12 +294,12 @@ const App: FC = () => {
     useEffect(() => {
         const graph_cookie = Number(Cookies.get('graph_tab'));
         if (graph_cookie && !isNaN(graph_cookie) && graph_cookie >= 1 && graph_cookie <= 3) setSelectedGraphTab(Number(graph_cookie.toFixed(0)) as any);
-        const timerange_cookie = Cookies.get('tr_tab');
-        if (timerange_cookie && (timerange_cookie === 'd' || timerange_cookie === 'w' || timerange_cookie === 'm' || timerange_cookie === 'y'))
-        {
-            setSelectedTab(timerange_cookie);
-            getData(timerange_cookie);
-        }
+        let timerange_cookie = Cookies.get('tr_tab');
+
+        if (!timerange_cookie || (timerange_cookie !== 'd' && timerange_cookie !== 'w' && timerange_cookie !== 'm' && timerange_cookie !== 'y')) timerange_cookie = 'd';
+
+        getData(timerange_cookie as TabValues);
+        setSelectedTab(timerange_cookie as TabValues);
     }, [])
 
     // useEffect(() => {
@@ -332,28 +334,13 @@ const App: FC = () => {
         .then((res: AxiosResponse) => {
             if (res.status === 200)
             {
-                console.log(res.data);
-                const update_time_elmnt = document.querySelector<HTMLSpanElement>('#last-request span');
-                if (update_time_elmnt) update_time_elmnt.textContent = res.data.last_request;
-
-                const stat_disturbances = document.querySelector('#stat-disturbances .stat-item-value');
-                if (stat_disturbances) stat_disturbances.textContent = res.data.nof_disturbances.val;
-                const stat_delays = document.querySelector('#stat-delays .stat-item-value');
-                if (stat_delays) stat_delays.textContent = res.data.nof_delays.val;
-                const stat_elevators = document.querySelector('#stat-elevators .stat-item-value');
-                if (stat_elevators) stat_elevators.textContent = res.data.nof_elevators.val;
-                const stat_reports = document.querySelector('#stat-reports .stat-item-value');
-                if (stat_reports) stat_reports.textContent = res.data.nof_reports.val;
-
-                const stat_disturbances_compare = document.querySelector('#stat-disturbances .stat-item-percentage');
-                if (stat_disturbances_compare) stat_disturbances_compare.textContent = res.data.nof_disturbances.compare;
-                const stat_delays_compare = document.querySelector('#stat-delays .stat-item-percentage');
-                if (stat_delays_compare) stat_delays_compare.textContent = res.data.nof_delays.compare;
-                const stat_elevators_compare = document.querySelector('#stat-elevators .stat-item-percentage');
-                if (stat_elevators_compare) stat_elevators_compare.textContent = res.data.nof_elevators.compare;
-                const stat_reports_compare = document.querySelector('#stat-reports .stat-item-percentage');
-                if (stat_reports_compare) stat_reports_compare.textContent = res.data.nof_reports.compare;
-
+                setLastRequest(res.data.last_request);
+                setStatData({
+                    disruptions: {val: res.data.nof_disturbances.val, change: res.data.nof_disturbances.compare},
+                    delays: {val: res.data.nof_delays.val, change: res.data.nof_delays.compare},
+                    elevators: {val: res.data.nof_elevators.val, change: res.data.nof_elevators.compare },
+                    total: { val: res.data.nof_reports.val, change: res.data.nof_reports.compare}
+                });
                 setReportHistoryData(res.data.report_history);
                 setReportRankingData(res.data.report_ranking);
                 setReportLineTypesData(res.data.report_line_types);
@@ -406,7 +393,14 @@ const App: FC = () => {
                             transition="all .15s ease"
                             cursor="pointer"
                             onClick={() => getData()}
-                        >LETZTES UPDATE: <span>26.05.2022 10.30PM</span></Box>
+                        >
+                            LETZTES UPDATE:&nbsp;
+                            {
+                                hasDataLoaded
+                                ? <span>{lastRequest}</span>
+                                : <Box display="inline-block" verticalAlign="middle" width="105px" height="15px" />
+                            }
+                        </Box>
                     </Flex>
                 </Box>
                 <Center marginTop="50px">
@@ -427,10 +421,10 @@ const App: FC = () => {
                 </Center>
                 <Container maxW={MAX_WIDTH} mt="75px">
                     <Flex justifyContent="space-between" fontFamily="InterVariable">
-                        <StatItem id="stat-disturbances" label='Störungen' number={5} percentage="23.36" iconPath={AlertIcon} iconAlt={"Red alert icon"} increase />
-                        <StatItem id="stat-delays" label='Verspätungen' number={8} percentage="8.05" iconPath={WarnIcon} iconAlt={"Yellow warn icon"} />
-                        <StatItem id="stat-elevators" label='Defekte Aufzüge' number={6} percentage="14.97" iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} increase />
-                        <StatItem id="stat-reports" label='Meldungen Gesamt' number={14} percentage="11.25" iconPath={ReportIcon} iconAlt={"Blue report symbole"} increase />
+                        <StatItem id="stat-disturbances" label='Störungen' number={statData.disruptions.val} percentage={statData.disruptions.change} iconPath={AlertIcon} iconAlt={"Red alert icon"} hasDataLoaded={hasDataLoaded} />
+                        <StatItem id="stat-delays" label='Verspätungen' number={statData.delays.val} percentage={statData.delays.change} iconPath={WarnIcon} iconAlt={"Yellow warn icon"} hasDataLoaded={hasDataLoaded} />
+                        <StatItem id="stat-elevators" label='Defekte Aufzüge' number={statData.elevators.val} percentage={statData.elevators.change} iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} hasDataLoaded={hasDataLoaded} />
+                        <StatItem id="stat-reports" label='Meldungen Gesamt' number={statData.total.val} percentage={statData.total.change} iconPath={ReportIcon} iconAlt={"Blue report symbole"} hasDataLoaded={hasDataLoaded} />
                     </Flex>
                 </Container>
                 <Container maxW={MAX_WIDTH} mt="70px" fontFamily="InterVariable" position="relative">
