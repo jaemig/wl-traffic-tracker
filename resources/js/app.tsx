@@ -355,6 +355,7 @@ const App: FC = () => {
     }
 
     const render = () => {
+        console.log(reportHistoryData);
         return (
             <ChakraProvider>
                 <Box padding="10px 20px">

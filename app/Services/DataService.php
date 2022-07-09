@@ -107,8 +107,8 @@ class DataService {
 
 
         // Report history of the last 24 hours
-        $disturbances = DB::select("SELECT DATE_FORMAT(timestamp, '%H') as 'hour', COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%') GROUP BY DATE_FORMAT(timestamp, '%H')", ['tr_start' => $timerange_start->format('Y-m-d')]);
-        $delays = DB::select("SELECT DATE_FORMAT(timestamp, '%H') as 'hour', COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%erspätung%') GROUP BY DATE_FORMAT(timestamp, '%H')");
+        $disturbances = DB::select("SELECT DATE_FORMAT(timestamp, '%H') as 'hour', COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%') GROUP BY DATE_FORMAT(timestamp, '%H')", ['tr_start' => $timerange_start->format('Y-m-d')]);
+        $delays = DB::select("SELECT DATE_FORMAT(timestamp, '%H') as 'hour', COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >=  :tr_start AND (title LIKE '%erspätung%' OR description LIKE '%erspätung%') GROUP BY DATE_FORMAT(timestamp, '%H')", ['tr_start' => $timerange_start->format('Y-m-d')]);
 
         $report_history = array();
         for ($i = 0; $i < 24; $i++)
