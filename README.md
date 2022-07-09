@@ -22,7 +22,7 @@ WLTT is a web application for tracking and monitoring disruptions and delays of 
 
 ## Information source
 
-All data is solely collected from the official [Wiener Linien Störungs Website](https://www.wienerlinien.at/eportal3/ep/programView.do?pageTypeId=66526&channelId=-46588&programId=69817). __There is no guarantee regarding the correctness and currency of the processed data__.
+All data is solely collected from the official [Wiener Linien Störungen Website](https://www.wienerlinien.at/eportal3/ep/programView.do?pageTypeId=66526&channelId=-46588&programId=69817). __There is no guarantee regarding the correctness and currency of the processed data__.
 
 ## License
 
