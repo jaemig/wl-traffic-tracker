@@ -44,20 +44,20 @@ class DataService {
             $timerange_end = $timerange_start->clone();
         }
 
-        $nof_disturbances = DB::select("SELECT COUNT(*) as 'NofDists' FROM `traffic_reports` WHERE (DATE_FORMAT(time_start, '%Y-%m-%d') >= :tr_start || DATE_FORMAT(time_end, '%Y-%m-%d') >= :tr_end) AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%')",
-            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_end' => $timerange_end->format('Y-m-d')]
+        $nof_disturbances = DB::select("SELECT COUNT(*) as 'NofDists' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2)) AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%')",
+            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_end' => $timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
         )[0]
             ->NofDists;
-        $nof_delays = DB::select("SELECT COUNT(*) as 'NofDelays' FROM `traffic_reports` WHERE (DATE_FORMAT(time_start, '%Y-%m-%d') >= :tr_start || DATE_FORMAT(time_end, '%Y-%m-%d') >= :tr_end) AND (title LIKE '%erspätung%')",
-            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_end' => $timerange_end->format('Y-m-d')]
+        $nof_delays = DB::select("SELECT COUNT(*) as 'NofDelays' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2)) AND (title LIKE '%erspätung%')",
+            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_end' => $timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
         )[0]
             ->NofDelays;
-        $nof_elevators = DB::select("SELECT COUNT(*) as 'NofElev' FROM `traffic_reports` WHERE report_category_id  = 7 AND (DATE_FORMAT(time_start, '%Y-%m-%d') >= :tr_start || DATE_FORMAT(time_end, '%Y-%m-%d') >= :tr_end)",
-            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_end' => $timerange_end->format('Y-m-d')]
+        $nof_elevators = DB::select("SELECT COUNT(*) as 'NofElev' FROM `traffic_reports` WHERE report_category_id  = 7 AND ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2))",
+            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_end' => $timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
         )[0]
             ->NofElev;
-        $nof_reports = DB::select("SELECT COUNT(*) as 'NofReports' FROM `traffic_reports` WHERE DATE_FORMAT(time_start, '%Y-%m-%d') >= :tr_start || DATE_FORMAT(time_end, '%Y-%m-%d') >= :tr_end",
-            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_end' => $timerange_end->format('Y-m-d')]
+        $nof_reports = DB::select("SELECT COUNT(*) as 'NofReports' FROM `traffic_reports` WHERE (DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2)",
+            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_end' => $timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
         )[0]
             ->NofReports;
 
@@ -83,27 +83,27 @@ class DataService {
             $compare_timerange_end = $compare_timerange_start;
         }
 
-        $compare_nof_disturbances = DB::select("SELECT COUNT(*) as 'NofDists' FROM `traffic_reports` WHERE DATE_FORMAT(time_start, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(time_end, '%Y-%m-%d') <= :tr_end AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%')",
-            ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d')]
+        $compare_nof_disturbances = DB::select("SELECT COUNT(*) as 'NofDists' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2)) AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%')",
+            ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
         )[0]
             ->NofDists;
-        $compare_nof_delays = DB::select("SELECT COUNT(*) as 'NofDelays' FROM `traffic_reports` WHERE DATE_FORMAT(time_start, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(time_end, '%Y-%m-%d') <= :tr_end AND (title LIKE '%erspätung%')",
-            ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d')]
+        $compare_nof_delays = DB::select("SELECT COUNT(*) as 'NofDelays' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2)) AND (title LIKE '%erspätung%')",
+            ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
         )[0]
             ->NofDelays;
-        $compare_nof_elevators = DB::select("SELECT COUNT(*) as 'NofElev' FROM `traffic_reports` WHERE report_category_id  = 7 AND DATE_FORMAT(time_start, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(time_end, '%Y-%m-%d') <= :tr_end",
-            ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d')]
+        $compare_nof_elevators = DB::select("SELECT COUNT(*) as 'NofElev' FROM `traffic_reports` WHERE report_category_id  = 7 AND ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2))",
+            ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
         )[0]
             ->NofElev;
-        $compare_nof_reports = DB::select("SELECT COUNT(*) as 'NofReports' FROM `traffic_reports` WHERE DATE_FORMAT(time_start, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(time_end, '%Y-%m-%d') <= :tr_end",
-            ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d')]
+        $compare_nof_reports = DB::select("SELECT COUNT(*) as 'NofReports' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2))",
+            ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
         )[0]
             ->NofReports;
 
-        $data->nof_disturbances = ['val' => $nof_disturbances, 'compare' => round($nof_disturbances / ($compare_nof_disturbances > 0 ? $compare_nof_disturbances : 1)  * 100, 2)];
-        $data->nof_delays = ['val' => $nof_delays, 'compare' => round($nof_delays / ($compare_nof_delays > 0 ? $compare_nof_delays : 1) * 100, 2)];
-        $data->nof_elevators = ['val' => $nof_elevators, 'compare' => round($nof_elevators / ($compare_nof_elevators > 0 ? $compare_nof_elevators : 1) * 100, 2)];
-        $data->nof_reports = ['val' => $nof_reports, 'compare' => round($nof_reports / ($compare_nof_reports > 0 ? $compare_nof_reports : 1) * 100, 2)];
+        $data->nof_disturbances = ['val' => $nof_disturbances, 'compare' => round(($nof_disturbances > 0 ? $nof_disturbances : 1) / ($compare_nof_disturbances > 0 ? $compare_nof_disturbances : 1)  * 100 - 100, 2)];
+        $data->nof_delays = ['val' => $nof_delays, 'compare' => round(($nof_delays > 0 ? $nof_delays : 1) / ($compare_nof_delays > 0 ? $compare_nof_delays : 1) * 100 - 100, 2)];
+        $data->nof_elevators = ['val' => $nof_elevators, 'compare' => round(($nof_elevators > 0 ? $nof_elevators : 1) / ($compare_nof_elevators > 0 ? $compare_nof_elevators : 1) * 100 - 100, 2)];
+        $data->nof_reports = ['val' => $nof_reports, 'compare' => round(($nof_reports > 0 ? $nof_reports : 1) / ($compare_nof_reports > 0 ? $compare_nof_reports : 1) * 100 - 100, 2)];
 
 
         // Report history of the last 24 hours
@@ -141,7 +141,7 @@ class DataService {
         foreach ($subways as $subway)
         {
             $record = array('name' => $subway);
-            $record['reports'] = DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%') AND (title LIKE :subway OR description LIKE ':subway')", ['tr_start' => $timerange_start->format('Y-m-d'), 'subway' => '%'.$subway.'%'])[0]->count;
+            $record['reports'] = DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%') AND (title LIKE :subway OR description LIKE ':subway')", ['tr_start' => $timerange_start->format('Y-m-d'), 'subway' => '%'.$subway.'%', 'tr_start2' => $timerange_start->format('Y-m-d')])[0]->count;
 
             array_push($report_ranking, $record);
             $subway_nof_reports += $record['reports'];
@@ -154,11 +154,11 @@ class DataService {
             ],
             [
                 'name' => 'Str.-Bahn',
-                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%traßenbahn%' OR description LIKE '%traßenbahn%')", ['tr_start' => $timerange_start->format('Y-m-d')])[0]->count
+                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%traßenbahn%' OR description LIKE '%traßenbahn%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')])[0]->count
             ],
             [
                 'name' => 'Bus',
-                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%bus%' OR description LIKE '%bus%')", ['tr_start' => $timerange_start->format('Y-m-d')])[0]->count
+                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%bus%' OR description LIKE '%bus%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')])[0]->count
             ]
         );
 
@@ -166,30 +166,30 @@ class DataService {
         $report_types = array(
             [
                 'name' => 'Einsätze',
-                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%einsatz%' OR description LIKE '%einsatz%')", ['tr_start' => $timerange_start->format('Y-m-d')])[0]->count
+                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%einsatz%' OR description LIKE '%einsatz%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')])[0]->count
             ],
             [
                 'name' => 'Gleisarbeiten',
-                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%gleis%' OR description LIKE '%gleis%')", ['tr_start' => $timerange_start->format('Y-m-d')])[0]->count
+                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%gleis%' OR description LIKE '%gleis%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')])[0]->count
             ],
             [
                 'name' => 'Schadhaftes Fahrzeug',
-                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%gleis%' OR description LIKE '%schadhaft%')", ['tr_start' => $timerange_start->format('Y-m-d')])[0]->count
+                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%gleis%' OR description LIKE '%schadhaft%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')])[0]->count
             ],
             [
                 'name' => 'Verkehrsbehinderung',
-                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%gleis%' OR description LIKE '%behind%')", ['tr_start' => $timerange_start->format('Y-m-d')])[0]->count
+                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%gleis%' OR description LIKE '%behind%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')])[0]->count
             ],
             [
                 'name' => 'Sonstiges',
-                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND NOT (title LIKE '%gleis%' OR description LIKE '%behind%') AND NOT (title LIKE '%gleis%' OR description LIKE '%schadhaft%') AND NOT (title LIKE '%gleis%' OR description LIKE '%gleis%') AND NOT (title LIKE '%einsatz%' OR description LIKE '%einsatz%')", ['tr_start' => $timerange_start->format('Y-m-d')])[0]->count
+                'reports' => DB::select("SELECT COUNT(*) as 'count' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND NOT (title LIKE '%gleis%' OR description LIKE '%behind%') AND NOT (title LIKE '%gleis%' OR description LIKE '%schadhaft%') AND NOT (title LIKE '%gleis%' OR description LIKE '%gleis%') AND NOT (title LIKE '%einsatz%' OR description LIKE '%einsatz%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')])[0]->count
             ]
         );
 
         $disturbance_lengths = array();
 
-        $disturbances_subway = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%verspätung%') AND (title LIKE '%u1' OR title LIKE '%u2%' OR title LIKE '%u3%' OR title LIKE '%u4%' OR title LIKE '%u6%' OR description LIKE '%u1%' OR description LIKE '%u2%' OR description LIKE '%u3%' OR description LIKE '%u4%' OR description LIKE '%u6%')",
-            ['tr_start' => $timerange_start->format('Y-m-d')]
+        $disturbances_subway = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%verspätung%') AND (title LIKE '%u1' OR title LIKE '%u2%' OR title LIKE '%u3%' OR title LIKE '%u4%' OR title LIKE '%u6%' OR description LIKE '%u1%' OR description LIKE '%u2%' OR description LIKE '%u3%' OR description LIKE '%u4%' OR description LIKE '%u6%')",
+            ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')]
         );
         foreach ($disturbances_subway as $disturbance)
         {
@@ -197,14 +197,14 @@ class DataService {
             array_push($disturbance_lengths, $record);
         }
 
-        $disturbances_tram = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%straßenbahn%' OR description LIKE '%straßenbahn%')", ['tr_start' => $timerange_start->format('Y-m-d')]);
+        $disturbances_tram = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%straßenbahn%' OR description LIKE '%straßenbahn%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')]);
         foreach ($disturbances_tram as $disturbance)
         {
             $record = array('name' => 'Straßenbahn', 'x' => $disturbance->hour, 'y' => $disturbance->duration);
             array_push($disturbance_lengths, $record);
         }
 
-        $disturbances_bus = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND (title LIKE '%bus%' OR description LIKE '%bus%')", ['tr_start' => $timerange_start->format('Y-m-d')]);
+        $disturbances_bus = DB::select("SELECT DATE_FORMAT(time_start, '%H') as 'hour', TIMESTAMPDIFF(MINUTE, time_start, time_end) as 'duration' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND DATE_FORMAT(NOW(), '%Y-%m-%d')) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND DATE_FORMAT(NOW(), '%Y-%m-%d'))) AND (title LIKE '%bus%' OR description LIKE '%bus%')", ['tr_start' => $timerange_start->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d')]);
         foreach ($disturbances_bus as $disturbance)
         {
             $record = array('name' => 'Bus', 'x' => $disturbance->hour, 'y' => $disturbance->duration);
