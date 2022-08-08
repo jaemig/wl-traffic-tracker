@@ -100,11 +100,29 @@ class DataService {
         )[0]
             ->NofReports;
 
-        $data->nof_disturbances = ['val' => $nof_disturbances, 'compare' => round(($nof_disturbances > 0 ? $nof_disturbances : 1) / ($compare_nof_disturbances > 0 ? $compare_nof_disturbances : 1)  * 100 - 100, 2)];
-        $data->nof_delays = ['val' => $nof_delays, 'compare' => round(($nof_delays > 0 ? $nof_delays : 1) / ($compare_nof_delays > 0 ? $compare_nof_delays : 1) * 100 - 100, 2)];
-        $data->nof_elevators = ['val' => $nof_elevators, 'compare' => round(($nof_elevators > 0 ? $nof_elevators : 1) / ($compare_nof_elevators > 0 ? $compare_nof_elevators : 1) * 100 - 100, 2)];
-        $data->nof_reports = ['val' => $nof_reports, 'compare' => round(($nof_reports > 0 ? $nof_reports : 1) / ($compare_nof_reports > 0 ? $compare_nof_reports : 1) * 100 - 100, 2)];
+        $comparison_list = [[$nof_disturbances, $compare_nof_disturbances, 'nof_disturbances'], [$nof_delays, $compare_nof_delays, 'nof_delays'], [$nof_elevators, $compare_nof_elevators, 'nof_elevators'], [$nof_reports, $compare_nof_reports ,'nof_reports']];
 
+        foreach ($comparison_list as $comparison_item)
+        {
+            $current_val = $comparison_item[0];
+            $comparison_val = $comparison_item[1];
+            $trend_val = 0;
+
+            if ($current_val == 0 && $comparison_val == 0)
+            {
+                $trend_val = 0;
+            }
+            else if ($comparison_val == 0 && $current_val > 0)
+            {
+                $trend_val = $current_val * 100 - 100;
+            }
+            else $trend_val = $current_val / $comparison_val * 100 - 100;
+
+            $data->{$comparison_item[2]} = [
+                'val' => $current_val,
+                'compare' => round($trend_val, 2)
+            ];
+        }
 
         // Report history of the last 24 hours
         $disturbances = DB::select("SELECT DATE_FORMAT(timestamp, '%H') as 'hour', COUNT(*) as 'count' FROM `traffic_reports` WHERE DATE_FORMAT(timestamp, '%Y-%m-%d') >= :tr_start AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%') GROUP BY DATE_FORMAT(timestamp, '%H')", ['tr_start' => $timerange_start->format('Y-m-d')]);
