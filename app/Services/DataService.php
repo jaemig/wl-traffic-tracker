@@ -116,6 +116,10 @@ class DataService {
             {
                 $trend_val = $current_val * 100 - 100;
             }
+            else if ($current_val == 0 && $comparison_val > 0)
+            {
+                $trend_val = -100;
+            }
             else $trend_val = $current_val / $comparison_val * 100 - 100;
 
             $data->{$comparison_item[2]} = [
