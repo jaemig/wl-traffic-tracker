@@ -336,10 +336,10 @@ const App: FC = () => {
             {
                 setLastRequest(res.data.last_request);
                 setStatData({
-                    disruptions: {val: res.data.nof_disturbances.val, change: res.data.nof_disturbances.compare},
-                    delays: {val: res.data.nof_delays.val, change: res.data.nof_delays.compare},
-                    elevators: {val: res.data.nof_elevators.val, change: res.data.nof_elevators.compare },
-                    total: { val: res.data.nof_reports.val, change: res.data.nof_reports.compare}
+                    disruptions: {val: res.data.stats.nof_disturbances.val, change: res.data.stats.nof_disturbances.compare},
+                    delays: {val: res.data.stats.nof_delays.val, change: res.data.stats.nof_delays.compare},
+                    elevators: {val: res.data.stats.nof_elevators.val, change: res.data.stats.nof_elevators.compare },
+                    total: { val: res.data.stats.nof_reports.val, change: res.data.stats.nof_reports.compare}
                 });
                 setReportHistoryData(res.data.report_history);
                 setReportRankingData(res.data.report_ranking);
@@ -350,7 +350,7 @@ const App: FC = () => {
                 if (!hasDataLoaded) setHasDataLoaded(true);
             }
         })
-        .catch(() => { })
+        .catch((e) => { console.log(e) })
         .finally(() => { active_request = false; })
     }
 

@@ -21,6 +21,7 @@ class WlttController extends Controller
      * @param Illuminate\Http\Request
      */
     public function getReportData(Request $request) {
+        // $timerange = $request->input('timerange') ?? 'd';
         $data = $this->data_service->getData($request->input('timerange') ?? 'd');
 
         return response(json_encode($data), 200);
