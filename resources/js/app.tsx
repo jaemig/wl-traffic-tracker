@@ -16,6 +16,8 @@ import WarnIcon from '../assets/alert_yellow.svg';
 import ElevatorIcon from '../assets/elevator.png';
 import EscalatorIcon from '../assets/escalator.png';
 import ReportIcon from '../assets/report.png';
+import LightModeIcon from '../assets/light_mode.svg';
+import DarkModeIcon from '../assets/dark_mode.svg';
 import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
 import CircleSwitchItem from './comps/CircleSwitchItem';
 import GraphBox from './comps/GraphBox';
@@ -284,6 +286,7 @@ const App: FC = () => {
         }
     ])
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
+    const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
     const purple = useColorModeValue('#040244', '#040244');
     const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
@@ -292,19 +295,18 @@ const App: FC = () => {
     const MAX_WIDTH = '5xl';
 
     useEffect(() => {
+        console.log('!');
+        if (Cookies.get('wltt_theme') === 'dark') setTheme('dark');
+
         const graph_cookie = Number(Cookies.get('graph_tab'));
         if (graph_cookie && !isNaN(graph_cookie) && graph_cookie >= 1 && graph_cookie <= 3) setSelectedGraphTab(Number(graph_cookie.toFixed(0)) as any);
-        let timerange_cookie = Cookies.get('tr_tab');
 
+        let timerange_cookie = Cookies.get('tr_tab');
         if (!timerange_cookie || (timerange_cookie !== 'd' && timerange_cookie !== 'w' && timerange_cookie !== 'm' && timerange_cookie !== 'y')) timerange_cookie = 'd';
 
-        getData(timerange_cookie as TabValues);
+        window.addEventListener('load', () => getData(timerange_cookie as TabValues));
         setSelectedTab(timerange_cookie as TabValues);
     }, [])
-
-    // useEffect(() => {
-    //     getData();
-    // }, [selectedTab, setSelectedTab])
 
     const handleTabSelection = (e: MouseEvent, id?: TabValues) => {
         const target_tab = id ?? 'd';
@@ -354,8 +356,13 @@ const App: FC = () => {
         .finally(() => { active_request = false; })
     }
 
+    const changeTheme = () => {
+        const new_theme = theme === 'dark' ? 'light' : 'dark';
+        Cookies.set('wltt_theme', new_theme);
+        setTheme(new_theme);
+    }
+
     const render = () => {
-        console.log(reportHistoryData);
         return (
             <ChakraProvider>
                 <Box padding="10px 20px">
@@ -378,29 +385,46 @@ const App: FC = () => {
                             WLTT
                         </Heading>
                         <Box
-                            id="last-request"
-                            bgColor={purple}
                             color="white"
                             fontFamily="InterVariable"
-                            fontWeight="bold"
-                            fontSize="12px"
-                            padding="5px 10px 5px 10px"
-                            borderRadius="5px"
-                            whiteSpace="nowrap"
-                            boxShadow="2px 4px 14px 0px rgba(12,8,151,0.4)"
-                            _hover={{
-                                transform: "scale(1.1)"
-                            }}
-                            transition="all .15s ease"
                             cursor="pointer"
-                            onClick={() => getData()}
-                        >
-                            LETZTES UPDATE:&nbsp;
-                            {
-                                hasDataLoaded
-                                ? <span>{lastRequest}</span>
-                                : <Box display="inline-block" verticalAlign="middle" width="105px" height="15px" />
-                            }
+                            >
+                            <Box
+                                id="last-request"
+                                bgColor={purple}
+                                fontWeight="bold"
+                                fontSize="12px"
+                                padding="5px 10px 5px 10px"
+                                whiteSpace="nowrap"
+                                onClick={() => getData()}
+                                display="inline-block"
+                                boxShadow="2px 4px 14px 0px rgba(12,8,151,0.4)"
+                                borderRadius="5px"
+                                _hover={{ transform: "scale(1.05)" }}
+                                transition="all .15s ease"
+                            >
+                                LETZTES UPDATE:&nbsp;
+                                {
+                                    hasDataLoaded
+                                    ? <span>{lastRequest}</span>
+                                    : <Box display="inline-block" verticalAlign="middle" width="105px" height="15px" />
+                                }
+                            </Box>
+                            <Box
+                                bgColor={purple}
+                                id="theme-toggle"
+                                display="inline-block"
+                                color="white"
+                                ml="20px"
+                                boxShadow="2px 4px 14px 0px rgba(12,8,151,0.4)"
+                                padding="5px"
+                                borderRadius="5px"
+                                verticalAlign="middle"
+                                _hover={{ transform: "scale(1.05)" }}
+                                transition="all .15s ease"
+                            >
+                                <Image src={ theme === 'dark' ? LightModeIcon : DarkModeIcon} boxSize="15px" onClick={changeTheme}/>
+                            </Box>
                         </Box>
                     </Flex>
                 </Box>
