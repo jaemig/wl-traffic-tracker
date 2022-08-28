@@ -63,6 +63,7 @@ class ReportService {
                         }
                     }
 
+
                     $existing_report = TrafficReport::firstWhere('name', $traffic_info->name);
 
                     $traffic_time_start = property_exists($traffic_info, 'time') && property_exists($traffic_info->time, 'start') ? str_replace('T', ' ', substr($traffic_info->time->start, 0, strpos($traffic_info->time->start, '.'))) : null;

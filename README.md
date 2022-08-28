@@ -17,8 +17,8 @@ WLTT is a web application for tracking and monitoring disruptions and delays of 
 - Report history of disruptions and delays grouped by time
 - Report ranking for every metro line
 - Report causes in comparison
-- Comparison of the number of total reports by type of transport
-- Length of disruptions grouped by type of transport
+- Comparison of the number of total reports by transport type
+- Length of disruptions grouped by transport type
 - Comparison of the numbe rof disruptions and delays by month
 
 ## Information source

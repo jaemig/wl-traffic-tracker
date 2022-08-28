@@ -68,7 +68,22 @@ const Header: FC<IHeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, l
                                     : <Box display="inline-block" verticalAlign="middle" width="105px" height="15px" />
                                 }
                             </Box>
-
+                            <Box
+                                bgColor={purple}
+                                id="theme-toggle"
+                                display="inline-block"
+                                color="white"
+                                ml="20px"
+                                boxShadow="2px 4px 14px 0px rgba(12,8,151,0.4)"
+                                padding="5px"
+                                borderRadius="5px"
+                                verticalAlign="middle"
+                                _hover={{ transform: "scale(1.05)" }}
+                                transition="all .15s ease"
+                            >
+                                {/* { colorMode } */}
+                                <Image src={ colorMode === 'dark' ? LightModeIcon : DarkModeIcon} boxSize="15px" onClick={toggleColorMode}/>
+                            </Box>
                         </Box>
                     </Flex>
                 </Box>
