@@ -110,7 +110,8 @@ class DataService {
 
                 $data->stats[$stat_category] = array(
                     'val' => $current_val,
-                    'compare' => round($trend_val, 2)
+                    'compare' => round($trend_val, 2),
+                    'comapre_val' => $comparison_val
                 );
             }
         }
