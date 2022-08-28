@@ -1,14 +1,21 @@
-import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton } from '@chakra-ui/react';
+import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode } from '@chakra-ui/react';
 import React, { FC, MouseEvent, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import TabItem from './comps/TabItem';
 import { TabValues } from './constants';
 import StatItem from './comps/StatItem';
 import axios, { AxiosResponse } from 'axios';
+import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
+import CircleSwitchItem from './comps/CircleSwitchItem';
+import GraphBox from './comps/GraphBox';
+import Cookies from 'js-cookie';
+import Header from './comps/header';
 
+// FONTS
 import "@fontsource/montserrat/variable.css";
 import "@fontsource/inter/variable.css";
 
+// ICONS
 import WienerLinien from '../assets/wiener_linien.svg';
 import GitHub from '../assets/github.svg';
 import AlertIcon from '../assets/alert_red.svg';
@@ -16,12 +23,6 @@ import WarnIcon from '../assets/alert_yellow.svg';
 import ElevatorIcon from '../assets/elevator.png';
 import EscalatorIcon from '../assets/escalator.png';
 import ReportIcon from '../assets/report.png';
-import LightModeIcon from '../assets/light_mode.svg';
-import DarkModeIcon from '../assets/dark_mode.svg';
-import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
-import CircleSwitchItem from './comps/CircleSwitchItem';
-import GraphBox from './comps/GraphBox';
-import Cookies from 'js-cookie';
 
 let active_request = false;
 
@@ -286,7 +287,8 @@ const App: FC = () => {
         }
     ])
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    // const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const { colorMode, toggleColorMode } = useColorMode();
 
     const purple = useColorModeValue('#040244', '#040244');
     const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
@@ -296,7 +298,7 @@ const App: FC = () => {
 
     useEffect(() => {
         console.log('!');
-        if (Cookies.get('wltt_theme') === 'dark') setTheme('dark');
+        // if (Cookies.get('wltt_theme') !== colorMode) toggleColorMode;
 
         const graph_cookie = Number(Cookies.get('graph_tab'));
         if (graph_cookie && !isNaN(graph_cookie) && graph_cookie >= 1 && graph_cookie <= 3) setSelectedGraphTab(Number(graph_cookie.toFixed(0)) as any);
@@ -357,77 +359,34 @@ const App: FC = () => {
     }
 
     const changeTheme = () => {
-        const new_theme = theme === 'dark' ? 'light' : 'dark';
-        Cookies.set('wltt_theme', new_theme);
-        setTheme(new_theme);
+        // const new_theme = colorMode === 'dark' ? 'light' : 'dark';
+        // console.log(toggleColorMode);
+        // Cookies.set('wltt_theme', new_theme);
+        // setTheme(new_theme);
+
+        // const body = document.querySelector('body');
+        // if (new_theme === 'light')
+        // {
+        //     if (body) body.style.backgroundColor = 'none';
+        // }
+        // else
+        // {
+        //     if (body) body.style.backgroundColor = ;
+        // }
     }
 
     const render = () => {
         return (
             <ChakraProvider>
-                <Box padding="10px 20px">
-                    <Flex position="relative" left="50%" maxW={MAX_WIDTH} justifyContent="space-between" alignItems="center" transform="translateX(-50%)">
-                        <Heading
-                            fontSize="55px"
-                            fontFamily="MontserratVariable"
-                            fontWeight="bold"
-                            display="inline-block"
-                            color={purple}
-                            verticalAlign="middle"
-                        >
-                            <Text
-                                display="inline-block"
-                                position="relative"
-                                top="-4px"
-                                color="#EA2C00"
-                                fontSize="41px"
-                            >//</Text>
-                            WLTT
-                        </Heading>
-                        <Box
-                            color="white"
-                            fontFamily="InterVariable"
-                            cursor="pointer"
-                            >
-                            <Box
-                                id="last-request"
-                                bgColor={purple}
-                                fontWeight="bold"
-                                fontSize="12px"
-                                padding="5px 10px 5px 10px"
-                                whiteSpace="nowrap"
-                                onClick={() => getData()}
-                                display="inline-block"
-                                boxShadow="2px 4px 14px 0px rgba(12,8,151,0.4)"
-                                borderRadius="5px"
-                                _hover={{ transform: "scale(1.05)" }}
-                                transition="all .15s ease"
-                            >
-                                LETZTES UPDATE:&nbsp;
-                                {
-                                    hasDataLoaded
-                                    ? <span>{lastRequest}</span>
-                                    : <Box display="inline-block" verticalAlign="middle" width="105px" height="15px" />
-                                }
-                            </Box>
-                            <Box
-                                bgColor={purple}
-                                id="theme-toggle"
-                                display="inline-block"
-                                color="white"
-                                ml="20px"
-                                boxShadow="2px 4px 14px 0px rgba(12,8,151,0.4)"
-                                padding="5px"
-                                borderRadius="5px"
-                                verticalAlign="middle"
-                                _hover={{ transform: "scale(1.05)" }}
-                                transition="all .15s ease"
-                            >
-                                <Image src={ theme === 'dark' ? LightModeIcon : DarkModeIcon} boxSize="15px" onClick={changeTheme}/>
-                            </Box>
-                        </Box>
-                    </Flex>
-                </Box>
+                <Header
+                    MAX_WIDTH={MAX_WIDTH}
+                    purple={purple}
+                    getData={getData}
+                    hasDataLoaded={hasDataLoaded}
+                    colorMode={colorMode}
+                    toggleColorMode={toggleColorMode}
+                    lastRequest={lastRequest}
+                />
                 <Center marginTop="50px">
                     <Flex color="white" fontFamily="InterVariable" fontWeight="bold" fontSize="16px" justifyContent="space-between" userSelect="none">
                         <TabItem selected={selectedTab === 'd'} primColor={purple} onClick={handleTabSelection} id='d'>

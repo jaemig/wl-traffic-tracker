@@ -9,6 +9,7 @@ WLTT is a web application for tracking and monitoring disruptions and delays of 
 - Start and end times of disruptions and delays
 - All affected stops and lines
 - Broken elevators and escalators
+- Name and geographic position of all stops
 
 ## Displayed informations
 - Choice between different time ranges (day, week, month and year)
@@ -22,7 +23,7 @@ WLTT is a web application for tracking and monitoring disruptions and delays of 
 
 ## Information source
 
-All data is solely collected from the official [Wiener Linien Störungen Website](https://www.wienerlinien.at/eportal3/ep/programView.do?pageTypeId=66526&channelId=-46588&programId=69817). __There is no guarantee regarding the correctness and currency of the processed data__.
+All data is solely collected from the official [Wiener Linien Realtime API](https://www.wienerlinien.at/eportal3/ep/programView.do?pageTypeId=66526&channelId=-46588&programId=69817). __There is no guarantee regarding the correctness and currency of the processed data__.
 
 ## License
 
