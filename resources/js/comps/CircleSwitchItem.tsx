@@ -1,7 +1,7 @@
 import { Box, useColorMode } from "@chakra-ui/react";
 import React, { FC, MouseEvent } from "react";
 
-interface ICircleSwitchItemProps {
+interface CircleSwitchItemProps {
     primColor: string;
     selected?: boolean;
     mt?: string;
@@ -9,7 +9,7 @@ interface ICircleSwitchItemProps {
     onClick?: {(e: MouseEvent<HTMLDivElement>, id: 1 | 2 | 3): void};
 }
 
-const CircleSwitchItem: FC<ICircleSwitchItemProps> = ({ id, primColor, selected, mt, onClick }) => {
+const CircleSwitchItem: FC<CircleSwitchItemProps> = ({ id, primColor, selected, mt, onClick }) => {
 
     const render = () => {
         const is_light_mode = useColorMode().colorMode === 'light';

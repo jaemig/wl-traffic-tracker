@@ -1,7 +1,7 @@
 import { Box, Stat, StatArrow, StatHelpText, StatLabel, StatNumber, Image, Text, Skeleton } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-interface IStatItemProps {
+interface StatItemProps {
     percentage: number
     borderColor: string,
     id?: string
@@ -13,7 +13,7 @@ interface IStatItemProps {
     hasDataLoaded?: boolean,
 }
 
-const StatItem: FC<IStatItemProps> = ({ id, label, number, increase, percentage, iconPath, iconAlt, hasDataLoaded, borderColor }) => {
+const StatItem: FC<StatItemProps> = ({ id, label, number, increase, percentage, iconPath, iconAlt, hasDataLoaded, borderColor }) => {
 
     const render = () => {
         return (

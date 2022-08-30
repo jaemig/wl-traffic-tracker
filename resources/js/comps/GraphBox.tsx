@@ -2,7 +2,7 @@ import { Box, Heading, HStack, Skeleton, Text, useColorModeValue } from "@chakra
 import React, { FC, ReactNode } from "react";
 
 
-interface IGraphBoxProps {
+interface GraphBoxProps {
     width: string
     height: string
     title: string
@@ -13,7 +13,7 @@ interface IGraphBoxProps {
     borderColor: string,
 }
 
-const GraphBox: FC<IGraphBoxProps> = ({ width, height, title, labels, children, hasDataLoaded, skeletonHeight, borderColor }) => {
+const GraphBox: FC<GraphBoxProps> = ({ width, height, title, labels, children, hasDataLoaded, skeletonHeight, borderColor }) => {
 
     const render = () => {
 

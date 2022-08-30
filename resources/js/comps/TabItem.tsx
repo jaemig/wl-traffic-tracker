@@ -1,8 +1,8 @@
 import { Box, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import React, { FC, MouseEvent } from 'react';
-import { TabValues } from '../constants';
+import { TabValues } from '../types';
 
-interface ITabItemProps {
+interface TabItemProps {
     primColor: string
     selected?: boolean
     disabled?: boolean
@@ -12,7 +12,7 @@ interface ITabItemProps {
     onClick?: {(e: MouseEvent, id?: TabValues): void}
 }
 
-const TabItem: FC<ITabItemProps> = ({ primColor, selected, disabled, children, id, last, onClick}) => {
+const TabItem: FC<TabItemProps> = ({ primColor, selected, disabled, children, id, last, onClick}) => {
 
     const render = () => {
         const is_light_mode = useColorMode().colorMode === 'light';

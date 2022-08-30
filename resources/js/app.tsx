@@ -1,7 +1,7 @@
 import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode } from '@chakra-ui/react';
 import React, { FC, MouseEvent, useEffect, useState } from 'react';
 import TabItem from './comps/TabItem';
-import { TabValues } from './constants';
+import { DisruptionLengthData, DisturbancesMonthData, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
 import StatItem from './comps/StatItem';
 import axios, { AxiosResponse } from 'axios';
 import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
@@ -15,13 +15,13 @@ import "@fontsource/montserrat/variable.css";
 import "@fontsource/inter/variable.css";
 
 // ICONS
-import WienerLinien from '../assets/wiener_linien.svg';
-import GitHub from '../assets/github.svg';
+
 import AlertIcon from '../assets/alert_red.svg';
 import WarnIcon from '../assets/alert_yellow.svg';
 import ElevatorIcon from '../assets/elevator.png';
 import EscalatorIcon from '../assets/escalator.png';
 import ReportIcon from '../assets/report.png';
+import Footer from './comps/footer';
 
 let active_request = false;
 
@@ -30,7 +30,7 @@ const App: FC = () => {
     const [selectedGraphTab, setSelectedGraphTab] = useState<1 | 2 | 3>(1);
     const [statData, setStatData] = useState({disruptions: {val: 5, change: 23.36} , delays: {val: 8, change: 8.05}, elevators: {val: 6, change: 14.97 }, total: { val: 14, change: 11.25} })
     const [lastRequest, setLastRequest] = useState('-');
-    const [reportHistoryData, setReportHistoryData] = useState([
+    const [reportHistoryData, setReportHistoryData] = useState<ReportHistoryData[]>([
         {
             name: 0,
             disturbances: 0,
@@ -153,7 +153,7 @@ const App: FC = () => {
         },
 
     ]);
-    const [reportRankingData, setReportRankingData] = useState([
+    const [reportRankingData, setReportRankingData] = useState<ReportRankingData[]>([
         {
             name: 'U1',
             reports: 0
@@ -179,7 +179,7 @@ const App: FC = () => {
             reports: 0
         }
     ])
-    const [reportLineTypesData, setReportLineTypesData] = useState([
+    const [reportLineTypesData, setReportLineTypesData] = useState<ReportLineTypesData[]>([
         {
             name: 'U-Bahn',
             reports: 34,
@@ -193,7 +193,7 @@ const App: FC = () => {
             reports: 33,
         }
     ])
-    const [reportTypesData, setReportTypesData] = useState([
+    const [reportTypesData, setReportTypesData] = useState<ReportTypesData[]>([
         {
             name: 'Einsätze',
             reports: 20
@@ -215,7 +215,7 @@ const App: FC = () => {
             reports: 20
         }
     ])
-    const [disruptionLengthData, setDisturbanceLengthData] = useState([
+    const [disruptionLengthData, setDisturbanceLengthData] = useState<DisruptionLengthData[]>([
         { name: 'U-Bahn', x: 100, y: 200 },
         { name: 'U-Bahn', x: 120, y: 100 },
         { name: 'Straßenbahn', x: 170, y: 300 },
@@ -223,7 +223,7 @@ const App: FC = () => {
         { name: 'Bus', x: 150, y: 400 },
         { name: 'Bus', x: 110, y: 180 },
     ])
-    const [disturbanceMonthData, setDisturbanceMonthData] = useState([
+    const [disturbanceMonthData, setDisturbanceMonthData] = useState<DisturbancesMonthData[]>([
         {
             name: 1,
             disturbances: 0,
@@ -297,9 +297,6 @@ const App: FC = () => {
     const MAX_WIDTH = '5xl';
 
     useEffect(() => {
-        console.log('!');
-        // if (Cookies.get('wltt_theme') !== colorMode) toggleColorMode;
-
         const graph_cookie = Number(Cookies.get('graph_tab'));
         if (graph_cookie && !isNaN(graph_cookie) && graph_cookie >= 1 && graph_cookie <= 3) setSelectedGraphTab(Number(graph_cookie.toFixed(0)) as any);
 
@@ -358,24 +355,194 @@ const App: FC = () => {
         .finally(() => { active_request = false; })
     }
 
-    const changeTheme = () => {
-        // const new_theme = colorMode === 'dark' ? 'light' : 'dark';
-        // console.log(toggleColorMode);
-        // Cookies.set('wltt_theme', new_theme);
-        // setTheme(new_theme);
-
-        // const body = document.querySelector('body');
-        // if (new_theme === 'light')
-        // {
-        //     if (body) body.style.backgroundColor = 'none';
-        // }
-        // else
-        // {
-        //     if (body) body.style.backgroundColor = ;
-        // }
-    }
-
     const render = () => {
+
+        let left_graph_box = undefined;
+        let right_graph_box = undefined;
+
+        if (selectedGraphTab === 1)
+        {
+            left_graph_box = (
+                <GraphBox
+                    width='calc(50% - 20px)'
+                    height="240px"
+                    title='Meldungsverlauf'
+                    labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: graph_blue}]}
+                    hasDataLoaded={hasDataLoaded}
+                    borderColor={borderColor}
+                >
+                    <ResponsiveContainer width="103%" height="87%">
+                        <AreaChart
+                            data={reportHistoryData}
+                            style={{ marginLeft: '-20px' }}
+                        >
+                            <defs>
+                                <linearGradient id="colorDisrupt" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#EA0054" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
+                            <Area type="monotone" dataKey="delays" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </GraphBox>
+            );
+
+            right_graph_box = (
+                <GraphBox
+                    width='calc(50% - 40px)'
+                    height='240px'
+                    title="Melde-Ranking (U-Bahn)"
+                    hasDataLoaded={hasDataLoaded}
+                    skeletonHeight='86%'
+                    borderColor={borderColor}
+                >
+                    <ResponsiveContainer width="105%" height="87%" id="subway-ranking">
+                        <ComposedChart
+                            layout="vertical"
+                            data={reportRankingData}
+                            style={{ marginLeft: '-40px', marginTop: '25px' }}
+                        >
+                            <CartesianGrid horizontal={false} strokeDasharray="5" opacity={useColorModeValue(0.5, 0.2)} />
+                            <XAxis type="number" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <YAxis dataKey="name" type="category" scale="band" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" interval={0} />
+                            <Bar dataKey="reports" barSize={20} radius={[0, 3, 3, 0]}>
+                                <Cell key={'cell-0'} fill={useColorModeValue("#F49397", '#E40009')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#E40009" strokeWidth={2} />
+                                <Cell key={'cell-0'} fill={useColorModeValue("#ECC0E8", '#AA62A4')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#AA62A4" strokeWidth={2} />
+                                <Cell key={'cell-0'} fill={useColorModeValue("#FFDABC", '#FD750A')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#FD760A" strokeWidth={2} />
+                                <Cell key={'cell-0'} fill={useColorModeValue("#8BD7A4", '#049334')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#049334" strokeWidth={2} />
+                                <Cell key={'cell-0'} fill={useColorModeValue("#DEC3A3", '#9B692C')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#9B692C" strokeWidth={2} />
+                            </Bar>
+                        </ComposedChart>
+                    </ResponsiveContainer>
+                </GraphBox>
+            )
+        }
+        else if (selectedGraphTab === 2)
+        {
+            left_graph_box = (
+                <GraphBox
+                    width='calc(50% - 20px)'
+                    height='240px'
+                    title='Meldeursachen'
+                    hasDataLoaded={hasDataLoaded}
+                    skeletonHeight='86%'
+                    borderColor={borderColor}
+                >
+                    <ResponsiveContainer width="105%" height="87%" id="request-ranking">
+                        <RadarChart cx='50%' cy='50%' outerRadius='80%' data={reportTypesData}>
+                            <PolarGrid strokeOpacity={useColorModeValue(1, 0.5)} />
+                            <PolarAngleAxis dataKey="name" fontFamily='InterVariable' fontSize='12px' />
+                            <Radar name="Meldeursachen" dataKey="reports" stroke={graph_blue} strokeWidth={2} color={'red'} fill={graph_blue} fillOpacity={useColorModeValue(0.6, 0.4)} />
+                        </RadarChart>
+                    </ResponsiveContainer>
+                </GraphBox>
+            );
+
+            right_graph_box = (
+                <GraphBox
+                    width='calc(50% - 40px)'
+                    height='240px'
+                    title='Meldungen nach Linientyp'
+                    hasDataLoaded={hasDataLoaded}
+                    skeletonHeight='86%'
+                    borderColor={borderColor}
+                >
+                    <ResponsiveContainer width="105%" height="87%" id="line_type_ranking">
+                        <PieChart>
+                            <Pie
+                                data={reportLineTypesData}
+                                cx='50%'
+                                cy='50%'
+                                labelLine={false}
+                                label={renderCustomizedLabel}
+                                outerRadius={80}
+                                fillOpacity={0.2}
+                                isAnimationActive={false}
+                                dataKey="reports"
+                            >
+                                {
+                                    reportLineTypesData.map((entry, idx) => {
+                                        const color = line_type_ranking_colors[idx % 3];
+                                        return <Cell key={idx} fill={color} fillOpacity={useColorModeValue(0.3, 0.1)} stroke={color} strokeWidth={2} />;
+                                    })
+                                }
+                            </Pie>
+                        </PieChart>
+                    </ResponsiveContainer>
+                </GraphBox>
+            )
+        }
+        else
+        {
+            left_graph_box = (
+                <GraphBox
+                    width='calc(50% - 20px)'
+                    height='240px'
+                    title='Störungslängen'
+                    labels={ [{name: 'U-Bahn', color: '#EB4E87'}, { name: 'Straßenbahn', color: graph_blue }, { name: 'Bus', color: '#FD760A' }] }
+                    hasDataLoaded={hasDataLoaded}
+                    borderColor={borderColor}
+                >
+                    <ResponsiveContainer width="105%" height="87%" id="request-ranking">
+                        <ScatterChart
+                            style={{ marginLeft: '-20px' }}
+                        >
+                            <CartesianGrid strokeDasharray="5" opacity={useColorModeValue(0.5, 0.3)} />
+                            <XAxis type="number" dataKey="x" tickLine={false} name="stature" fontFamily="InterVariable" fontSize="12px" />
+                            <YAxis type="number" dataKey="y" tickLine={false} name="weight" fontFamily="InterVariable" fontSize="12px" />
+                            <Scatter name="A school" data={disruptionLengthData} fill="#8884d8">
+                                {
+                                    disruptionLengthData.map((entry, idx) => (
+                                        <Cell key={idx} fill={disruption_length_colors[entry.name as 'Straßenbahn' | 'U-Bahn' | 'Bus']} />
+                                    ))
+                                }
+                            </Scatter>
+                        </ScatterChart>
+                    </ResponsiveContainer>
+                </GraphBox>
+            );
+
+            right_graph_box = (
+                <GraphBox
+                    width='calc(50% - 40px)'
+                    height="240px"
+                    title='Störungen nach Monat'
+                    labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: graph_blue}]}
+                    hasDataLoaded={hasDataLoaded}
+                    borderColor={borderColor}
+                >
+                    <ResponsiveContainer width="103%" height="87%">
+                        <AreaChart
+                            data={disturbanceMonthData}
+                            style={{ marginLeft: '-20px' }}
+                        >
+                            <defs>
+                                <linearGradient id="colorDisrupt" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#EA0054" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
+                            <Area type="monotone" dataKey="delays" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </GraphBox>
+            )
+        }
         return (
             <>
                 <Header
@@ -411,84 +578,7 @@ const App: FC = () => {
                 </Container>
                 <Container maxW={MAX_WIDTH} mt="70px" fontFamily="InterVariable" position="relative">
                     {
-                        selectedGraphTab === 1 &&
-                            <GraphBox
-                                width='calc(50% - 20px)'
-                                height="240px"
-                                title='Meldungsverlauf'
-                                labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: graph_blue}]}
-                                hasDataLoaded={hasDataLoaded}
-                                borderColor={borderColor}
-                            >
-                                <ResponsiveContainer width="103%" height="87%">
-                                    <AreaChart
-                                        data={reportHistoryData}
-                                        style={{ marginLeft: '-20px' }}
-                                    >
-                                        <defs>
-                                            <linearGradient id="colorDisrupt" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#EA0054" stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
-                                            </linearGradient>
-                                            <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
-                                        <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
-                                        <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
-                                        <Area type="monotone" dataKey="delays" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </GraphBox>
-                    }
-                    {
-                        selectedGraphTab === 2 &&
-                            <GraphBox
-                                width='calc(50% - 20px)'
-                                height='240px'
-                                title='Meldeursachen'
-                                hasDataLoaded={hasDataLoaded}
-                                skeletonHeight='86%'
-                                borderColor={borderColor}
-                            >
-                                <ResponsiveContainer width="105%" height="87%" id="request-ranking">
-                                    <RadarChart cx='50%' cy='50%' outerRadius='80%' data={reportTypesData}>
-                                        <PolarGrid strokeOpacity={useColorModeValue(1, 0.5)} />
-                                        <PolarAngleAxis dataKey="name" fontFamily='InterVariable' fontSize='12px' />
-                                        <Radar name="Meldeursachen" dataKey="reports" stroke={graph_blue} strokeWidth={2} color={'red'} fill={graph_blue} fillOpacity={useColorModeValue(0.6, 0.4)} />
-                                    </RadarChart>
-                                </ResponsiveContainer>
-                            </GraphBox>
-                    }
-                    {
-                        selectedGraphTab === 3 &&
-                            <GraphBox
-                                width='calc(50% - 20px)'
-                                height='240px'
-                                title='Störungslängen'
-                                labels={ [{name: 'U-Bahn', color: '#EB4E87'}, { name: 'Straßenbahn', color: graph_blue }, { name: 'Bus', color: '#FD760A' }] }
-                                hasDataLoaded={hasDataLoaded}
-                                borderColor={borderColor}
-                            >
-                                <ResponsiveContainer width="105%" height="87%" id="request-ranking">
-                                    <ScatterChart
-                                        style={{ marginLeft: '-20px' }}
-                                    >
-                                        <CartesianGrid strokeDasharray="5" opacity={useColorModeValue(0.5, 0.3)} />
-                                        <XAxis type="number" dataKey="x" tickLine={false} name="stature" fontFamily="InterVariable" fontSize="12px" />
-                                        <YAxis type="number" dataKey="y" tickLine={false} name="weight" fontFamily="InterVariable" fontSize="12px" />
-                                        <Scatter name="A school" data={disruptionLengthData} fill="#8884d8">
-                                            {
-                                                disruptionLengthData.map((entry, idx) => (
-                                                    <Cell key={idx} fill={disruption_length_colors[entry.name as 'Straßenbahn' | 'U-Bahn' | 'Bus']} />
-                                                ))
-                                            }
-                                        </Scatter>
-                                    </ScatterChart>
-                                </ResponsiveContainer>
-                            </GraphBox>
+                        left_graph_box
                     }
                     <Flex
                         position="relative"
@@ -504,127 +594,10 @@ const App: FC = () => {
                         <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 3} id={3} onClick={handelGraphTabSelection} mt="5px" />
                     </Flex>
                     {
-                        selectedGraphTab === 1 &&
-                            <GraphBox
-                                width='calc(50% - 40px)'
-                                height='240px'
-                                title="Melde-Ranking (U-Bahn)"
-                                hasDataLoaded={hasDataLoaded}
-                                skeletonHeight='86%'
-                                borderColor={borderColor}
-                            >
-                                <ResponsiveContainer width="105%" height="87%" id="subway-ranking">
-                                    <ComposedChart
-                                        layout="vertical"
-                                        data={reportRankingData}
-                                        style={{ marginLeft: '-40px', marginTop: '25px' }}
-                                    >
-                                        <CartesianGrid horizontal={false} strokeDasharray="5" opacity={useColorModeValue(0.5, 0.2)} />
-                                        <XAxis type="number" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
-                                        <YAxis dataKey="name" type="category" scale="band" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" interval={0} />
-                                        <Bar dataKey="reports" barSize={20} radius={[0, 3, 3, 0]}>
-                                            <Cell key={'cell-0'} fill={useColorModeValue("#F49397", '#E40009')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#E40009" strokeWidth={2} />
-                                            <Cell key={'cell-0'} fill={useColorModeValue("#ECC0E8", '#AA62A4')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#AA62A4" strokeWidth={2} />
-                                            <Cell key={'cell-0'} fill={useColorModeValue("#FFDABC", '#FD750A')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#FD760A" strokeWidth={2} />
-                                            <Cell key={'cell-0'} fill={useColorModeValue("#8BD7A4", '#049334')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#049334" strokeWidth={2} />
-                                            <Cell key={'cell-0'} fill={useColorModeValue("#DEC3A3", '#9B692C')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#9B692C" strokeWidth={2} />
-                                        </Bar>
-                                    </ComposedChart>
-                                </ResponsiveContainer>
-                            </GraphBox>
-                    }
-                    {
-                        selectedGraphTab === 2 &&
-                            <GraphBox
-                                width='calc(50% - 40px)'
-                                height='240px'
-                                title='Meldungen nach Linientyp'
-                                hasDataLoaded={hasDataLoaded}
-                                skeletonHeight='86%'
-                                borderColor={borderColor}
-                            >
-                                <ResponsiveContainer width="105%" height="87%" id="line_type_ranking">
-                                    <PieChart>
-                                        <Pie
-                                            data={reportLineTypesData}
-                                            cx='50%'
-                                            cy='50%'
-                                            labelLine={false}
-                                            label={renderCustomizedLabel}
-                                            outerRadius={80}
-                                            fillOpacity={0.2}
-                                            isAnimationActive={false}
-                                            dataKey="reports"
-                                        >
-                                            {
-                                                reportLineTypesData.map((entry, idx) => {
-                                                    const color = line_type_ranking_colors[idx % 3];
-                                                    return <Cell key={idx} fill={color} fillOpacity={useColorModeValue(0.3, 0.1)} stroke={color} strokeWidth={2} />;
-                                                })
-                                            }
-                                        </Pie>
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </GraphBox>
-                    }
-                    {
-                        selectedGraphTab === 3 &&
-                            <GraphBox
-                                width='calc(50% - 40px)'
-                                height="240px"
-                                title='Störungen nach Monat'
-                                labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: graph_blue}]}
-                                hasDataLoaded={hasDataLoaded}
-                                borderColor={borderColor}
-                            >
-                                <ResponsiveContainer width="103%" height="87%">
-                                    <AreaChart
-                                        data={disturbanceMonthData}
-                                        style={{ marginLeft: '-20px' }}
-                                    >
-                                        <defs>
-                                            <linearGradient id="colorDisrupt" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#EA0054" stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
-                                            </linearGradient>
-                                            <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
-                                        <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
-                                        <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
-                                        <Area type="monotone" dataKey="delays" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </GraphBox>
+                        right_graph_box
                     }
                 </Container>
-                <Box position="absolute" bottom="0" left="0" width="100%" height="90px" bgColor={purple}>
-                    <Box position="absolute" top="0" left="50%" width="4xl" height="100%" transform="translateX(-50%)">
-                        <Box position="relative" top="50%" transform="translateY(-50%)" color="white" fontFamily="InterVariable" fontWeight="bold" fontSize="12px">
-                            <Box position="relative" left="50%" display="inline-block" transform="translateX(-50%)" cursor="default">
-                                <Center mb="10px">
-                                    <Text opacity="0.3" _hover={{ opacity: 1 }} transition="all .15s ease">This site is in no way affiliated with Wiener Linien GmbH & Co KG</Text>
-                                </Center>
-                                <Center>
-                                    <Text opacity="0.3" _hover={{ opacity: 1 }} transition="all .15s ease">There is no guarantee regarding the correctness and currency of the displayed data.</Text>
-                                </Center>
-                            </Box>
-                            <Box position="absolute" right="0" top="50%" transform="translateY(-50%)" >
-                                <Link href="https://www.wienerlinien.at/eportal3/ep/programView.do?pageTypeId=66526&channelId=-46588&programId=69817" target="_blank" _active={{ outline: 0 }} _focus={{ outline: 0 }}>
-                                    <Image src={WienerLinien} boxSize="20px" display="inline-block" opacity="0.3" _hover={{ opacity: 1 }} transition="all .15s ease" alt="Official logo of Wiener Linien" />
-                                </Link>
-                                <Link href="https://github.com/Jan-Emig/wl-traffic-tracker" target="_blank" _active={{ outline: 0 }} _focus={{ outline: 0 }}>
-                                    <Image src={GitHub} boxSize="20px" display="inline-block" marginLeft="10px" opacity="0.3" _hover={{ opacity: 1 }} alt="Official GitHub logo" transition="all .15s ease" />
-                                </Link>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box position="relative" cursor="default">
-                    </Box>
-                </Box>
+                <Footer purple={purple} />
             </>
         )
     }

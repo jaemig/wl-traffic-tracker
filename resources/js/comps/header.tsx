@@ -1,13 +1,13 @@
 import { Box, Flex, Heading, Text, Image, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import React, { FC } from "react";
-import { TabValues } from "../constants";
+import { TabValues } from "../types";
 
 
 // ICONS
 import LightModeIcon from '../../assets/light_mode.svg';
 import DarkModeIcon from '../../assets/dark_mode.svg';
 
-interface IHeaderProps {
+interface HeaderProps {
     purple: string,
     MAX_WIDTH: string,
     getData: (selected_timerange?: TabValues) => void,
@@ -15,7 +15,7 @@ interface IHeaderProps {
     lastRequest: string,
 }
 
-const Header: FC<IHeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, lastRequest, }) => {
+const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, lastRequest, }) => {
     const { colorMode, toggleColorMode } = useColorMode();
 
     const render = () => {
