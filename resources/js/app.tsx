@@ -1,6 +1,5 @@
 import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode } from '@chakra-ui/react';
 import React, { FC, MouseEvent, useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
 import TabItem from './comps/TabItem';
 import { TabValues } from './constants';
 import StatItem from './comps/StatItem';
@@ -287,13 +286,14 @@ const App: FC = () => {
         }
     ])
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
-    // const [theme, setTheme] = useState<'light' | 'dark'>('light');
-    const { colorMode, toggleColorMode } = useColorMode();
 
     const purple = useColorModeValue('#040244', '#040244');
     const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
-    const line_type_ranking_colors = ['#00509D', '#EA0054', '#FD760A'];
+    const graph_blue = useColorModeValue('#00509D', '#5ea4e6');
+    const line_type_ranking_colors = [graph_blue, '#EA0054', '#FD760A'];
+    const borderColor = useColorModeValue('gray.200', '#4B6992');
     const disruption_length_colors = {'U-Bahn': '#EB4E87', 'Straßenbahn': '#3C73A7', 'Bus': '#FD760A'};
+    // const textColor = useColorModeValue('white', '#80776A');
     const MAX_WIDTH = '5xl';
 
     useEffect(() => {
@@ -377,14 +377,12 @@ const App: FC = () => {
 
     const render = () => {
         return (
-            <ChakraProvider>
+            <>
                 <Header
                     MAX_WIDTH={MAX_WIDTH}
                     purple={purple}
                     getData={getData}
                     hasDataLoaded={hasDataLoaded}
-                    colorMode={colorMode}
-                    toggleColorMode={toggleColorMode}
                     lastRequest={lastRequest}
                 />
                 <Center marginTop="50px">
@@ -405,10 +403,10 @@ const App: FC = () => {
                 </Center>
                 <Container maxW={MAX_WIDTH} mt="75px">
                     <Flex justifyContent="space-between" fontFamily="InterVariable">
-                        <StatItem id="stat-disturbances" label='Störungen' number={statData.disruptions.val} percentage={statData.disruptions.change} iconPath={AlertIcon} iconAlt={"Red alert icon"} hasDataLoaded={hasDataLoaded} />
-                        <StatItem id="stat-delays" label='Verspätungen' number={statData.delays.val} percentage={statData.delays.change} iconPath={WarnIcon} iconAlt={"Yellow warn icon"} hasDataLoaded={hasDataLoaded} />
-                        <StatItem id="stat-elevators" label='Defekte Aufzüge' number={statData.elevators.val} percentage={statData.elevators.change} iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} hasDataLoaded={hasDataLoaded} />
-                        <StatItem id="stat-reports" label='Meldungen Gesamt' number={statData.total.val} percentage={statData.total.change} iconPath={ReportIcon} iconAlt={"Blue report symbole"} hasDataLoaded={hasDataLoaded} />
+                        <StatItem id="stat-disturbances" label='Störungen' number={statData.disruptions.val} percentage={statData.disruptions.change} iconPath={AlertIcon} iconAlt={"Red alert icon"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
+                        <StatItem id="stat-delays" label='Verspätungen' number={statData.delays.val} percentage={statData.delays.change} iconPath={WarnIcon} iconAlt={"Yellow warn icon"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
+                        <StatItem id="stat-elevators" label='Defekte Aufzüge' number={statData.elevators.val} percentage={statData.elevators.change} iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
+                        <StatItem id="stat-reports" label='Meldungen Gesamt' number={statData.total.val} percentage={statData.total.change} iconPath={ReportIcon} iconAlt={"Blue report symbole"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
                     </Flex>
                 </Container>
                 <Container maxW={MAX_WIDTH} mt="70px" fontFamily="InterVariable" position="relative">
@@ -418,8 +416,9 @@ const App: FC = () => {
                                 width='calc(50% - 20px)'
                                 height="240px"
                                 title='Meldungsverlauf'
-                                labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: '#00509D'}]}
+                                labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: graph_blue}]}
                                 hasDataLoaded={hasDataLoaded}
+                                borderColor={borderColor}
                             >
                                 <ResponsiveContainer width="103%" height="87%">
                                     <AreaChart
@@ -432,14 +431,14 @@ const App: FC = () => {
                                                 <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
                                             </linearGradient>
                                             <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#00509D" stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor="#00509D" stopOpacity={0} />
+                                                <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
                                         <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                                         <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                                         <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
-                                        <Area type="monotone" dataKey="delays" stackId="1" stroke="#00509D" fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                                        <Area type="monotone" dataKey="delays" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </GraphBox>
@@ -452,12 +451,13 @@ const App: FC = () => {
                                 title='Meldeursachen'
                                 hasDataLoaded={hasDataLoaded}
                                 skeletonHeight='86%'
+                                borderColor={borderColor}
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="request-ranking">
                                     <RadarChart cx='50%' cy='50%' outerRadius='80%' data={reportTypesData}>
-                                        <PolarGrid enableBackground={'red'} />
+                                        <PolarGrid strokeOpacity={useColorModeValue(1, 0.5)} />
                                         <PolarAngleAxis dataKey="name" fontFamily='InterVariable' fontSize='12px' />
-                                        <Radar name="Meldeursachen" dataKey="reports" stroke="#00509D" strokeWidth={2} fill="#00509D" fillOpacity={0.6} />
+                                        <Radar name="Meldeursachen" dataKey="reports" stroke={graph_blue} strokeWidth={2} color={'red'} fill={graph_blue} fillOpacity={useColorModeValue(0.6, 0.4)} />
                                     </RadarChart>
                                 </ResponsiveContainer>
                             </GraphBox>
@@ -468,14 +468,15 @@ const App: FC = () => {
                                 width='calc(50% - 20px)'
                                 height='240px'
                                 title='Störungslängen'
-                                labels={ [{name: 'U-Bahn', color: '#EB4E87'}, { name: 'Straßenbahn', color: '#3C73A7' }, { name: 'Bus', color: '#FD760A' }] }
+                                labels={ [{name: 'U-Bahn', color: '#EB4E87'}, { name: 'Straßenbahn', color: graph_blue }, { name: 'Bus', color: '#FD760A' }] }
                                 hasDataLoaded={hasDataLoaded}
+                                borderColor={borderColor}
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="request-ranking">
                                     <ScatterChart
                                         style={{ marginLeft: '-20px' }}
                                     >
-                                        <CartesianGrid strokeDasharray="5" opacity={0.5} />
+                                        <CartesianGrid strokeDasharray="5" opacity={useColorModeValue(0.5, 0.3)} />
                                         <XAxis type="number" dataKey="x" tickLine={false} name="stature" fontFamily="InterVariable" fontSize="12px" />
                                         <YAxis type="number" dataKey="y" tickLine={false} name="weight" fontFamily="InterVariable" fontSize="12px" />
                                         <Scatter name="A school" data={disruptionLengthData} fill="#8884d8">
@@ -510,6 +511,7 @@ const App: FC = () => {
                                 title="Melde-Ranking (U-Bahn)"
                                 hasDataLoaded={hasDataLoaded}
                                 skeletonHeight='86%'
+                                borderColor={borderColor}
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="subway-ranking">
                                     <ComposedChart
@@ -517,15 +519,15 @@ const App: FC = () => {
                                         data={reportRankingData}
                                         style={{ marginLeft: '-40px', marginTop: '25px' }}
                                     >
-                                        <CartesianGrid horizontal={false} strokeDasharray="5" opacity={0.5} />
+                                        <CartesianGrid horizontal={false} strokeDasharray="5" opacity={useColorModeValue(0.5, 0.2)} />
                                         <XAxis type="number" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                                         <YAxis dataKey="name" type="category" scale="band" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" interval={0} />
                                         <Bar dataKey="reports" barSize={20} radius={[0, 3, 3, 0]}>
-                                            <Cell key={'cell-0'} fill="#F49397" stroke="#E40009" strokeWidth={2} />
-                                            <Cell key={'cell-0'} fill="#ECC0E8" stroke="#AA62A4" strokeWidth={2} />
-                                            <Cell key={'cell-0'} fill="#FFDABC" stroke="#FD760A" strokeWidth={2} />
-                                            <Cell key={'cell-0'} fill="#8BD7A4" stroke="#049334" strokeWidth={2} />
-                                            <Cell key={'cell-0'} fill="#DEC3A3" stroke="#9B692C" strokeWidth={2} />
+                                            <Cell key={'cell-0'} fill={useColorModeValue("#F49397", '#E40009')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#E40009" strokeWidth={2} />
+                                            <Cell key={'cell-0'} fill={useColorModeValue("#ECC0E8", '#AA62A4')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#AA62A4" strokeWidth={2} />
+                                            <Cell key={'cell-0'} fill={useColorModeValue("#FFDABC", '#FD750A')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#FD760A" strokeWidth={2} />
+                                            <Cell key={'cell-0'} fill={useColorModeValue("#8BD7A4", '#049334')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#049334" strokeWidth={2} />
+                                            <Cell key={'cell-0'} fill={useColorModeValue("#DEC3A3", '#9B692C')} fillOpacity={useColorModeValue(1, 0.3)} stroke="#9B692C" strokeWidth={2} />
                                         </Bar>
                                     </ComposedChart>
                                 </ResponsiveContainer>
@@ -539,6 +541,7 @@ const App: FC = () => {
                                 title='Meldungen nach Linientyp'
                                 hasDataLoaded={hasDataLoaded}
                                 skeletonHeight='86%'
+                                borderColor={borderColor}
                             >
                                 <ResponsiveContainer width="105%" height="87%" id="line_type_ranking">
                                     <PieChart>
@@ -556,7 +559,7 @@ const App: FC = () => {
                                             {
                                                 reportLineTypesData.map((entry, idx) => {
                                                     const color = line_type_ranking_colors[idx % 3];
-                                                    return <Cell key={idx} fill={color} stroke={color} strokeWidth={2} />;
+                                                    return <Cell key={idx} fill={color} fillOpacity={useColorModeValue(0.3, 0.1)} stroke={color} strokeWidth={2} />;
                                                 })
                                             }
                                         </Pie>
@@ -567,11 +570,12 @@ const App: FC = () => {
                     {
                         selectedGraphTab === 3 &&
                             <GraphBox
-                            width='calc(50% - 40px)'
-                            height="240px"
-                            title='Störungen nach Monat'
-                            labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: '#00509D'}]}
-                            hasDataLoaded={hasDataLoaded}
+                                width='calc(50% - 40px)'
+                                height="240px"
+                                title='Störungen nach Monat'
+                                labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: graph_blue}]}
+                                hasDataLoaded={hasDataLoaded}
+                                borderColor={borderColor}
                             >
                                 <ResponsiveContainer width="103%" height="87%">
                                     <AreaChart
@@ -584,14 +588,14 @@ const App: FC = () => {
                                                 <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
                                             </linearGradient>
                                             <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#00509D" stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor="#00509D" stopOpacity={0} />
+                                                <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
                                         <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                                         <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                                         <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
-                                        <Area type="monotone" dataKey="delays" stackId="1" stroke="#00509D" fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                                        <Area type="monotone" dataKey="delays" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </GraphBox>
@@ -621,7 +625,7 @@ const App: FC = () => {
                     <Box position="relative" cursor="default">
                     </Box>
                 </Box>
-            </ChakraProvider>
+            </>
         )
     }
 
@@ -629,10 +633,7 @@ const App: FC = () => {
 };
 
 
-ReactDOM.render(
-    <App />,
-    document.getElementById('root')
-)
+export default App;
 
 // React > 18.0.2
 // const container = document.getElementById('root');

@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, Skeleton, Text } from "@chakra-ui/react";
+import { Box, Heading, HStack, Skeleton, Text, useColorModeValue } from "@chakra-ui/react";
 import React, { FC, ReactNode } from "react";
 
 
@@ -9,10 +9,11 @@ interface IGraphBoxProps {
     labels?: { name: string; color: string; }[]
     children?: React.ReactNode,
     hasDataLoaded?: boolean,
-    skeletonHeight?: string
+    skeletonHeight?: string,
+    borderColor: string,
 }
 
-const GraphBox: FC<IGraphBoxProps> = ({ width, height, title, labels, children, hasDataLoaded, skeletonHeight }) => {
+const GraphBox: FC<IGraphBoxProps> = ({ width, height, title, labels, children, hasDataLoaded, skeletonHeight, borderColor }) => {
 
     const render = () => {
 
@@ -50,7 +51,7 @@ const GraphBox: FC<IGraphBoxProps> = ({ width, height, title, labels, children, 
                 height={height}
                 border="1px solid"
                 borderRadius="12px"
-                borderColor="gray.200"
+                borderColor={borderColor}
                 _hover={{
                     transform: 'scale(1.01)',
                     boxShadow: '6px 6px 24px -6px rgba(0,0,0,0.15)'

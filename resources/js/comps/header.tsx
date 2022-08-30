@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text, Image, useColorMode } from "@chakra-ui/react";
+import { Box, Flex, Heading, Text, Image, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { TabValues } from "../constants";
 
@@ -13,13 +13,10 @@ interface IHeaderProps {
     getData: (selected_timerange?: TabValues) => void,
     hasDataLoaded: boolean,
     lastRequest: string,
-    colorMode: 'light' | 'dark',
-    toggleColorMode: () => void
 }
 
 const Header: FC<IHeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, lastRequest, }) => {
     const { colorMode, toggleColorMode } = useColorMode();
-
 
     const render = () => {
         return (
@@ -30,7 +27,7 @@ const Header: FC<IHeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, l
                             fontFamily="MontserratVariable"
                             fontWeight="bold"
                             display="inline-block"
-                            color={purple}
+                            color={colorMode === 'light' ? purple : '#D2CEC8'}
                             verticalAlign="middle"
                         >
                             <Text

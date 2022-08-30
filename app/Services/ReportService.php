@@ -49,7 +49,6 @@ class ReportService {
                     }
                 }
 
-
                 foreach ($json_data->data->trafficInfos as $traffic_info) {
                     // Check if there are any new line types that are not yet in the database
                     if (property_exists($traffic_info, 'attributes') && property_exists($traffic_info->attributes, 'relatedLineTypes')) {

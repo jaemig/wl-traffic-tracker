@@ -2,17 +2,18 @@ import { Box, Stat, StatArrow, StatHelpText, StatLabel, StatNumber, Image, Text,
 import React, { FC } from 'react';
 
 interface IStatItemProps {
+    percentage: number
+    borderColor: string,
     id?: string
     label?: string
     number?: number
     increase?: boolean
-    percentage: number
     iconPath?: any
     iconAlt?: string,
-    hasDataLoaded?: boolean
+    hasDataLoaded?: boolean,
 }
 
-const StatItem: FC<IStatItemProps> = ({ id, label, number, increase, percentage, iconPath, iconAlt, hasDataLoaded }) => {
+const StatItem: FC<IStatItemProps> = ({ id, label, number, increase, percentage, iconPath, iconAlt, hasDataLoaded, borderColor }) => {
 
     const render = () => {
         return (
@@ -20,7 +21,7 @@ const StatItem: FC<IStatItemProps> = ({ id, label, number, increase, percentage,
                 id={id}
                 border="1px solid"
                 borderRadius="12px"
-                borderColor="gray.200"
+                borderColor={borderColor}
                 maxWidth="210px"
                 padding="23px 15px"
                 _hover={{

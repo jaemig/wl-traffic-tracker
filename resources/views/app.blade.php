@@ -7,7 +7,7 @@
     </head>
     <body class="antialiased">
         <div id="root">
-            <script src="{{ asset('js/app.js') }}"></script>
+            <script src="{{ asset('js/provider.js') }}"></script>
         </div>
     </body>
 </html>

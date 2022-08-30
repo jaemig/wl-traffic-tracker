@@ -8,7 +8,7 @@ WLTT is a web application for tracking and monitoring disruptions and delays of 
 
 - Start and end times of disruptions and delays
 - All affected stops and lines
-- Broken elevators and escalators
+- Broken elevators and escalators (work in progress)
 - Name and geographic position of all stops
 
 ## Displayed informations
