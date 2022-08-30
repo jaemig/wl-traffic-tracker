@@ -1,4 +1,4 @@
-import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode } from '@chakra-ui/react';
+import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode, useToast } from '@chakra-ui/react';
 import React, { FC, MouseEvent, useEffect, useState } from 'react';
 import TabItem from './comps/TabItem';
 import { DisruptionLengthData, DisturbancesMonthData, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
@@ -287,13 +287,19 @@ const App: FC = () => {
     ])
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
 
+    const request_toast = useToast({
+        position: 'bottom-right',
+        title: 'Could not fetch data 😔',
+        status: 'error',
+        isClosable: true,
+        duration: 3000,
+    })
     const purple = useColorModeValue('#040244', '#040244');
     const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
     const graph_blue = useColorModeValue('#00509D', '#5ea4e6');
     const line_type_ranking_colors = [graph_blue, '#EA0054', '#FD760A'];
     const borderColor = useColorModeValue('gray.200', '#4B6992');
     const disruption_length_colors = {'U-Bahn': '#EB4E87', 'Straßenbahn': '#3C73A7', 'Bus': '#FD760A'};
-    // const textColor = useColorModeValue('white', '#80776A');
     const MAX_WIDTH = '5xl';
 
     useEffect(() => {
@@ -351,7 +357,7 @@ const App: FC = () => {
                 if (!hasDataLoaded) setHasDataLoaded(true);
             }
         })
-        .catch((e) => { console.log(e) })
+        .catch((e) => { console.log(e); request_toast(); })
         .finally(() => { active_request = false; })
     }
 
@@ -542,7 +548,8 @@ const App: FC = () => {
                     </ResponsiveContainer>
                 </GraphBox>
             )
-        }
+        };
+
         return (
             <>
                 <Header
@@ -551,6 +558,7 @@ const App: FC = () => {
                     getData={getData}
                     hasDataLoaded={hasDataLoaded}
                     lastRequest={lastRequest}
+                    requestToast={request_toast}
                 />
                 <Center marginTop="50px">
                     <Flex color="white" fontFamily="InterVariable" fontWeight="bold" fontSize="16px" justifyContent="space-between" userSelect="none">

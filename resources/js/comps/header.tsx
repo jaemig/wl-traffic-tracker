@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text, Image, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Box, Flex, Heading, Text, Image, useColorMode, useToast } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { TabValues } from "../types";
 
@@ -13,9 +13,10 @@ interface HeaderProps {
     getData: (selected_timerange?: TabValues) => void,
     hasDataLoaded: boolean,
     lastRequest: string,
+    requestToast: ReturnType<typeof useToast>
 }
 
-const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, lastRequest, }) => {
+const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, lastRequest, requestToast }) => {
     const { colorMode, toggleColorMode } = useColorMode();
 
     const render = () => {
@@ -51,7 +52,13 @@ const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, la
                                 fontSize="12px"
                                 padding="5px 10px 5px 10px"
                                 whiteSpace="nowrap"
-                                onClick={() => getData()}
+                                onClick={() => {
+                                    requestToast({
+                                        status: 'success',
+                                        title: 'Fetching data...'
+                                    })
+                                    getData();
+                                }}
                                 display="inline-block"
                                 boxShadow="2px 4px 14px 0px rgba(12,8,151,0.4)"
                                 borderRadius="5px"
