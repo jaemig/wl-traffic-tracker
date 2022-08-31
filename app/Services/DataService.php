@@ -181,29 +181,6 @@ class DataService {
 
         return $data;
 
-        // // Get the main stats from the given timerange to allow a comparison between the current and the previous stats
-        // [$compare_timerange_start, $compare_timerange_end] = $this->getTimerange($timerange_token, true);
-
-
-        // $compare_nof_disturbances = DB::select("SELECT COUNT(*) as 'NofDists' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2)) AND (title LIKE '%örung%' OR title LIKE '%insatz' OR description LIKE '%örung%')",
-        //     ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
-        // )[0]
-        //     ->NofDists;
-        // $compare_nof_delays = DB::select("SELECT COUNT(*) as 'NofDelays' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2)) AND (title LIKE '%erspätung%')",
-        //     ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
-        // )[0]
-        //     ->NofDelays;
-        // $compare_nof_elevators = DB::select("SELECT COUNT(*) as 'NofElev' FROM `traffic_reports` WHERE report_category_id  = 7 AND ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2))",
-        //     ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
-        // )[0]
-        //     ->NofElev;
-        // $compare_nof_reports = DB::select("SELECT COUNT(*) as 'NofReports' FROM `traffic_reports` WHERE ((DATE_FORMAT(time_start, '%Y-%m-%d') BETWEEN :tr_start AND :tr_end) OR (DATE_FORMAT(time_end, '%Y-%m-%d') BETWEEN :tr_start2 AND :tr_end2))",
-        //     ['tr_start' => $compare_timerange_start->format('Y-m-d'), 'tr_end' => $compare_timerange_end->format('Y-m-d'), 'tr_start2' => $timerange_start->format('Y-m-d'), 'tr_end2' => $timerange_end->format('Y-m-d')]
-        // )[0]
-        //     ->NofReports;
-
-        // $comparison_list = [[$nof_disturbances, $compare_nof_disturbances, 'nof_disturbances'], [$nof_delays, $compare_nof_delays, 'nof_delays'], [$nof_elevators, $compare_nof_elevators, 'nof_elevators'], [$nof_reports, $compare_nof_reports ,'nof_reports']];
-
     }
 
     /**

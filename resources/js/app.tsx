@@ -571,7 +571,7 @@ const App: FC = () => {
                         <TabItem selected={selectedTab === 'm'} primColor={purple} onClick={handleTabSelection} id='m'>
                             Monat
                         </TabItem>
-                        <TabItem selected={selectedTab === 'y'} primColor={purple} onClick={handleTabSelection}  id='y' disabled last>
+                        <TabItem selected={selectedTab === 'y'} primColor={purple} onClick={handleTabSelection} id='y' last>
                             Jahr
                         </TabItem>
                     </Flex>
