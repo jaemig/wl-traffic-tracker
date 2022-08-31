@@ -53,10 +53,13 @@ const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, la
                                 padding="5px 10px 5px 10px"
                                 whiteSpace="nowrap"
                                 onClick={() => {
-                                    requestToast({
-                                        status: 'success',
-                                        title: 'Fetching data...'
-                                    })
+                                    if (!requestToast.isActive('fetching-toast')) {
+                                        requestToast({
+                                            id: 'fetching-toast',
+                                            status: undefined,
+                                            title: 'Fetching data...'
+                                        })
+                                    }
                                     getData();
                                 }}
                                 display="inline-block"
