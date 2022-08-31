@@ -2,24 +2,24 @@
 
 ## About WLTT
 
-WLTT is a web application for tracking and monitoring disruptions and delays of public transport reported by Wiener Linien. Besides daily statistics, those reports get analyzed regularly to find protential causes of disruptions and comparable deviations from normal traffic.
+WLTT is a web application for tracking and monitoring disruptions and delays of Vienna's public transport system reported by Wiener Linien. Besides daily statistics, those reports get analyzed regularly to find protential causes of disruptions and comparable deviations from normal traffic.
 
-## Tracked informations
+## Tracked Informations
 
 - Start and end times of disruptions and delays
-- All affected stops and lines
+- Affected stops and lines
 - Broken elevators and escalators (work in progress)
 - Name and geographic position of all stops
 
 ## Displayed informations
 - Choice between different time ranges (day, week, month and year)
-- Current number of disruptions, delays, broken elevators and reports (including a comparison to the selected time range).
+- Current number of disruptions, delays, broken elevators and reports (including a comparison with the selected time range).
 - Report history of disruptions and delays grouped by time
 - Report ranking for every metro line
 - Report causes in comparison
 - Comparison of the number of total reports by transport type
 - Length of disruptions grouped by transport type
-- Comparison of the numbe rof disruptions and delays by month
+- Comparison of the number of disruptions and delays by month
 
 ## Information source
 
