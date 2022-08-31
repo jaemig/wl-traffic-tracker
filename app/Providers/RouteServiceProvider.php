@@ -52,7 +52,7 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('report', function(Request $request) {
             $api_key = $request->input('api');
             if ($api_key === env('REPORT_API_KEY', '')) {
-                return Limit::perHour(300000)
+                return Limit::perHour(12)
                     ->by($request->ip())
                     ->response(function (Request $request) {
                         return response('', 429);
@@ -61,7 +61,7 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('data', function(Request $request) {
-            return Limit::perMinute(60)
+            return Limit::perMinute(120)
                 ->by($request->ip())
                 ->response(function (Request $request) {
                     return response('', 429);
