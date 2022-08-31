@@ -32,8 +32,8 @@ class DataService {
             }
             else if ($timerange_token == 'y')
             {
-                $timerange_start = new Carbon('first day of this year');
                 $timerange_end = Carbon::now();
+                $timerange_start = $timerange_end->copy()->startOfYear();
             }
             else
             {
@@ -57,8 +57,8 @@ class DataService {
             }
             else if ($timerange_token == 'y')
             {
-                $timerange_start = new Carbon('first day of last year');
-                $timerange_end = new Carbon('last day of last year');
+                $timerange_start = Carbon::now()->subYear()->startOfYear();
+                $timerange_end = $timerange_start->clone()->endOfYear();
             }
             else
             {
@@ -115,7 +115,6 @@ class DataService {
                 );
             }
         }
-
 
         $data->report_history = $this->getReport($timerange_start);
         $data->report_ranking = $this->getSubwayRanking($timerange_start);
