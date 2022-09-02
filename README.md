@@ -21,6 +21,10 @@ WLTT is a web application for tracking and monitoring disruptions and delays of 
 - Length of disruptions grouped by transport type
 - Comparison of the number of disruptions and delays by month
 
+## Ancillary Functions
+- Light/Dark mode support
+- Multi-Language support (german/english)
+
 ## Information source
 
 All data is solely collected from the official [Wiener Linien Realtime API](https://www.wienerlinien.at/eportal3/ep/programView.do?pageTypeId=66526&channelId=-46588&programId=69817). __There is no guarantee regarding the correctness and currency of the processed data__.
