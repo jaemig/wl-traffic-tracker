@@ -12,4 +12,9 @@ type DisruptionLengthData = { name: string, x: number, y: number }
 
 type DisturbancesMonthData = { name: number, disturbances: number, delays: number }
 
-export { TabValues, ReportHistoryData, ReportRankingData, ReportLineTypesData, ReportTypesData, DisruptionLengthData, DisturbancesMonthData}
+enum Languages {
+    DE = 'DE',
+    EN = 'EN'
+}
+
+export { TabValues, ReportHistoryData, ReportRankingData, ReportLineTypesData, ReportTypesData, DisruptionLengthData, DisturbancesMonthData, Languages }

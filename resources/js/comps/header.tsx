@@ -1,11 +1,14 @@
 import { Box, Flex, Heading, Text, Image, useColorMode, useToast } from "@chakra-ui/react";
-import React, { FC } from "react";
-import { TabValues } from "../types";
+import React, { Dispatch, FC, SetStateAction, useContext, useState } from "react";
+import { Languages, TabValues } from "../types";
 
 
 // ICONS
 import LightModeIcon from '../../assets/light_mode.svg';
 import DarkModeIcon from '../../assets/dark_mode.svg';
+import AustriaFlag from '../../assets/austria_flag.png'
+import UsaFlag from '../../assets/usa_flag.png'
+import { getLanguageContext, LanguageContext } from "../context";
 
 interface HeaderProps {
     purple: string,
@@ -13,11 +16,15 @@ interface HeaderProps {
     getData: (selected_timerange?: TabValues) => void,
     hasDataLoaded: boolean,
     lastRequest: string,
-    requestToast: ReturnType<typeof useToast>
+    requestToast: ReturnType<typeof useToast>,
+    lang: Languages,
+    setLang: () => void
 }
 
-const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, lastRequest, requestToast }) => {
+const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, lastRequest, requestToast, lang, setLang }) => {
     const { colorMode, toggleColorMode } = useColorMode();
+    const { langData } = useContext(LanguageContext);
+    const [isLangChanging, setIsLangChanging] = useState(false);
 
     const render = () => {
         return (
@@ -68,7 +75,7 @@ const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, la
                                 _hover={{ transform: "scale(1.05)" }}
                                 transition="all .15s ease"
                             >
-                                LETZTES UPDATE:&nbsp;
+                                {langData?.header.update.toUpperCase()}:&nbsp;
                                 {
                                     hasDataLoaded
                                     ? <span>{lastRequest}</span>
@@ -90,6 +97,44 @@ const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, la
                             >
                                 {/* { colorMode } */}
                                 <Image src={ colorMode === 'dark' ? LightModeIcon : DarkModeIcon} boxSize="15px" onClick={toggleColorMode}/>
+                            </Box>
+                            <Box
+                                bgColor={purple}
+                                display="inline-block"
+                                color="white"
+                                ml="20px"
+                                boxShadow="2px 4px 14px 0px rgba(12,8,151,0.4)"
+                                padding="5px"
+                                borderRadius="5px"
+                                verticalAlign="middle"
+                                _hover={{ transform: "scale(1.05)" }}
+                                transition="all .15s ease"
+                                onClick={() => {
+                                    if (!isLangChanging)
+                                    {
+                                        setIsLangChanging(true);
+                                        if (!requestToast.isActive('lang-ack-toast')) {
+                                            requestToast({
+                                                id: 'lang-ack-toast',
+                                                status: undefined,
+                                                title: langData?.toasts.lang_change
+                                            })
+                                        }
+                                        setLang();
+                                        setTimeout(() => {
+                                            setIsLangChanging(false);
+                                            if (!requestToast.isActive('lang-finish-toast')) {
+                                                requestToast({
+                                                    id: 'lang-finish-toast',
+                                                    status: 'success',
+                                                    title: langData?.toasts.lang_change_complete
+                                                })
+                                            }
+                                        }, 1000);
+                                    }
+                                }}
+                            >
+                                <Image height="15px" src={lang === Languages.DE ? AustriaFlag : UsaFlag} />
                             </Box>
                         </Box>
                     </Flex>

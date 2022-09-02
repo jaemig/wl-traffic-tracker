@@ -1,7 +1,7 @@
 import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode, useToast } from '@chakra-ui/react';
-import React, { FC, MouseEvent, useEffect, useState } from 'react';
+import React, { createContext, Dispatch, FC, MouseEvent, SetStateAction, useContext, useEffect, useState } from 'react';
 import TabItem from './comps/TabItem';
-import { DisruptionLengthData, DisturbancesMonthData, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
+import { DisruptionLengthData, DisturbancesMonthData, Languages, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
 import StatItem from './comps/StatItem';
 import axios, { AxiosResponse } from 'axios';
 import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
@@ -22,10 +22,17 @@ import ElevatorIcon from '../assets/elevator.png';
 import EscalatorIcon from '../assets/escalator.png';
 import ReportIcon from '../assets/report.png';
 import Footer from './comps/footer';
+import { LanguageContext } from './context';
 
 let active_request = false;
 
-const App: FC = () => {
+interface AppProps {
+    lang: Languages,
+    setLang: () => void
+}
+
+const App: FC<AppProps> = ({ lang, setLang }) => {
+    const { langData, setLangData } = useContext(LanguageContext);
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
     const [selectedGraphTab, setSelectedGraphTab] = useState<1 | 2 | 3>(1);
     const [statData, setStatData] = useState({disruptions: {val: 5, change: 23.36} , delays: {val: 8, change: 8.05}, elevators: {val: 6, change: 14.97 }, total: { val: 14, change: 11.25} })
@@ -286,16 +293,15 @@ const App: FC = () => {
         }
     ])
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
-
     const request_toast = useToast({
         position: 'bottom-right',
-        title: 'Could not fetch data 😔',
+        title: langData?.toasts.update_failed,
         status: 'error',
         isClosable: true,
         duration: 3000,
     })
     const purple = useColorModeValue('#040244', '#040244');
-    const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
+    // const gentle_red = useColorModeValue('#EB4E87', '#EB4E87');
     const graph_blue = useColorModeValue('#00509D', '#5ea4e6');
     const line_type_ranking_colors = [graph_blue, '#EA0054', '#FD760A'];
     const borderColor = useColorModeValue('gray.200', '#4B6992');
@@ -373,7 +379,7 @@ const App: FC = () => {
                     width='calc(50% - 20px)'
                     height="240px"
                     title='Meldungsverlauf'
-                    labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: graph_blue}]}
+                    labels={[{ name : langData?.graphs.report_history.disturbances ?? '', color: '#EA0054'}, {name : langData?.graphs.report_history.delays ?? '', color: graph_blue}]}
                     hasDataLoaded={hasDataLoaded}
                     borderColor={borderColor}
                 >
@@ -405,7 +411,7 @@ const App: FC = () => {
                 <GraphBox
                     width='calc(50% - 40px)'
                     height='240px'
-                    title="Melde-Ranking (U-Bahn)"
+                    title={langData?.graphs.report_ranking.title ?? ''}
                     hasDataLoaded={hasDataLoaded}
                     skeletonHeight='86%'
                     borderColor={borderColor}
@@ -437,7 +443,7 @@ const App: FC = () => {
                 <GraphBox
                     width='calc(50% - 20px)'
                     height='240px'
-                    title='Meldeursachen'
+                    title={langData?.graphs.report_causes.title ?? ''}
                     hasDataLoaded={hasDataLoaded}
                     skeletonHeight='86%'
                     borderColor={borderColor}
@@ -456,7 +462,7 @@ const App: FC = () => {
                 <GraphBox
                     width='calc(50% - 40px)'
                     height='240px'
-                    title='Meldungen nach Linientyp'
+                    title={langData?.graphs.report_line_types.title ?? ''}
                     hasDataLoaded={hasDataLoaded}
                     skeletonHeight='86%'
                     borderColor={borderColor}
@@ -492,8 +498,8 @@ const App: FC = () => {
                 <GraphBox
                     width='calc(50% - 20px)'
                     height='240px'
-                    title='Störungslängen'
-                    labels={ [{name: 'U-Bahn', color: '#EB4E87'}, { name: 'Straßenbahn', color: graph_blue }, { name: 'Bus', color: '#FD760A' }] }
+                    title={langData?.graphs.disturbance_lengths.title ?? ''}
+                    labels={ [{name: langData?.graphs.disturbance_lengths.subway ?? '', color: '#EB4E87'}, { name: langData?.graphs.disturbance_lengths.tram ?? '', color: graph_blue }, { name: langData?.graphs.disturbance_lengths.bus ?? '', color: '#FD760A' }] }
                     hasDataLoaded={hasDataLoaded}
                     borderColor={borderColor}
                 >
@@ -520,8 +526,8 @@ const App: FC = () => {
                 <GraphBox
                     width='calc(50% - 40px)'
                     height="240px"
-                    title='Störungen nach Monat'
-                    labels={[{ name : 'Störungen', color: '#EA0054'}, {name : 'Verspätungen', color: graph_blue}]}
+                    title={langData?.graphs.reports_month.title ?? ''}
+                    labels={[{ name : langData?.graphs.reports_month.disturbances ?? '', color: '#EA0054'}, {name : langData?.graphs.reports_month.delays ?? '', color: graph_blue}]}
                     hasDataLoaded={hasDataLoaded}
                     borderColor={borderColor}
                 >
@@ -559,29 +565,31 @@ const App: FC = () => {
                     hasDataLoaded={hasDataLoaded}
                     lastRequest={lastRequest}
                     requestToast={request_toast}
+                    lang={lang}
+                    setLang={setLang}
                 />
                 <Center marginTop="50px">
                     <Flex color="white" fontFamily="InterVariable" fontWeight="bold" fontSize="16px" justifyContent="space-between" userSelect="none">
                         <TabItem selected={selectedTab === 'd'} primColor={purple} onClick={handleTabSelection} id='d'>
-                            Tag
+                            { langData?.timerange.day }
                         </TabItem>
                         <TabItem selected={selectedTab === 'w'} primColor={purple} onClick={handleTabSelection} id='w'>
-                            Woche
+                            { langData?.timerange.week }
                         </TabItem>
                         <TabItem selected={selectedTab === 'm'} primColor={purple} onClick={handleTabSelection} id='m'>
-                            Monat
+                            { langData?.timerange.month }
                         </TabItem>
                         <TabItem selected={selectedTab === 'y'} primColor={purple} onClick={handleTabSelection} id='y' last>
-                            Jahr
+                            { langData?.timerange.year }
                         </TabItem>
                     </Flex>
                 </Center>
                 <Container maxW={MAX_WIDTH} mt="75px">
                     <Flex justifyContent="space-between" fontFamily="InterVariable">
-                        <StatItem id="stat-disturbances" label='Störungen' number={statData.disruptions.val} percentage={statData.disruptions.change} iconPath={AlertIcon} iconAlt={"Red alert icon"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
-                        <StatItem id="stat-delays" label='Verspätungen' number={statData.delays.val} percentage={statData.delays.change} iconPath={WarnIcon} iconAlt={"Yellow warn icon"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
-                        <StatItem id="stat-elevators" label='Defekte Aufzüge' number={statData.elevators.val} percentage={statData.elevators.change} iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
-                        <StatItem id="stat-reports" label='Meldungen Gesamt' number={statData.total.val} percentage={statData.total.change} iconPath={ReportIcon} iconAlt={"Blue report symbole"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
+                        <StatItem id="stat-disturbances" label={ langData?.stats.disturbances } number={statData.disruptions.val} percentage={statData.disruptions.change} iconPath={AlertIcon} iconAlt={"Red alert icon"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
+                        <StatItem id="stat-delays" label={ langData?.stats.delays } number={statData.delays.val} percentage={statData.delays.change} iconPath={WarnIcon} iconAlt={"Yellow warn icon"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
+                        <StatItem id="stat-elevators" label={ langData?.stats.elevators } number={statData.elevators.val} percentage={statData.elevators.change} iconPath={ElevatorIcon} iconAlt={"Elevator symbole"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
+                        <StatItem id="stat-reports" label={ langData?.stats.reports } number={statData.total.val} percentage={statData.total.change} iconPath={ReportIcon} iconAlt={"Blue report symbole"} hasDataLoaded={hasDataLoaded} borderColor={borderColor} />
                     </Flex>
                 </Container>
                 <Container maxW={MAX_WIDTH} mt="70px" fontFamily="InterVariable" position="relative">
