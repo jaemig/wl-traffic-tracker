@@ -28,7 +28,7 @@ let active_request = false;
 
 interface AppProps {
     lang: Languages,
-    setLang: () => void
+    setLang: () => Languages
 }
 
 const App: FC<AppProps> = ({ lang, setLang }) => {
@@ -315,7 +315,8 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         let timerange_cookie = Cookies.get('tr_tab');
         if (!timerange_cookie || (timerange_cookie !== 'd' && timerange_cookie !== 'w' && timerange_cookie !== 'm' && timerange_cookie !== 'y')) timerange_cookie = 'd';
 
-        getData(timerange_cookie as TabValues)
+        setTimeout(() => getData(timerange_cookie as TabValues), 10);
+        // getData(timerange_cookie as TabValues)
         // window.addEventListener('pageshow', () => getData(timerange_cookie as TabValues));
         setSelectedTab(timerange_cookie as TabValues);
     }, [])
@@ -344,7 +345,6 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
     const getData = (selected_timerange?: TabValues):void => {
         console.log('?');
         if (active_request) return;
-        console.log('!');
         active_request = true;
         axios.get('/api/data', { params: { timerange: selected_timerange ?? selectedTab }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
         .then((res: AxiosResponse) => {

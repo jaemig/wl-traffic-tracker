@@ -18,7 +18,7 @@ interface HeaderProps {
     lastRequest: string,
     requestToast: ReturnType<typeof useToast>,
     lang: Languages,
-    setLang: () => void
+    setLang: () => Languages
 }
 
 const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, lastRequest, requestToast, lang, setLang }) => {
@@ -120,14 +120,19 @@ const Header: FC<HeaderProps> = ({ MAX_WIDTH, purple, getData, hasDataLoaded, la
                                                 title: langData?.toasts.lang_change
                                             })
                                         }
-                                        setLang();
+                                        const new_lang = setLang();
                                         setTimeout(() => {
                                             setIsLangChanging(false);
                                             if (!requestToast.isActive('lang-finish-toast')) {
                                                 requestToast({
                                                     id: 'lang-finish-toast',
                                                     status: 'success',
-                                                    title: langData?.toasts.lang_change_complete
+                                                    title: (
+                                                        <>
+                                                            <Text display="inline-block" verticalAlign="middle">{ langData?.toasts.lang_change_complete }</Text>&nbsp;
+                                                            <Image src={new_lang === Languages.DE ? AustriaFlag : UsaFlag} display="inline-block" verticalAlign="middle" height="15px" />
+                                                        </>
+                                                    )
                                                 })
                                             }
                                         }, 1000);

@@ -36,11 +36,12 @@ const Provider: FC = () => {
         .catch()
     }
 
-    const setLanguage = () => {
+    const setLanguage = (): Languages => {
         const new_lang = lang === Languages.DE ? Languages.EN : Languages.DE;
         getLanguage(new_lang);
         setLang(new_lang);
         Cookies.set('lang', new_lang.toString());
+        return new_lang;
     }
 
     // const LanguageContext = createContext('de');
