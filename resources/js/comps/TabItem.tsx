@@ -12,6 +12,9 @@ interface TabItemProps {
     onClick?: {(e: MouseEvent, id?: TabValues): void}
 }
 
+/**
+ * Clickable rectangular button that performs the specified action on click.
+ */
 const TabItem: FC<TabItemProps> = ({ primColor, selected, disabled, children, id, last, onClick}) => {
 
     const render = () => {

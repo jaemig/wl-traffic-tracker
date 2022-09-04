@@ -1,7 +1,7 @@
 import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode, useToast } from '@chakra-ui/react';
 import React, { createContext, Dispatch, FC, MouseEvent, SetStateAction, useContext, useEffect, useState } from 'react';
 import TabItem from './comps/TabItem';
-import { DisruptionLengthData, DisturbancesMonthData, Languages, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
+import { DisruptionLengthData, DisturbancesMonthData, GraphTabIds, Languages, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
 import StatItem from './comps/StatItem';
 import axios, { AxiosResponse } from 'axios';
 import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
@@ -34,7 +34,7 @@ interface AppProps {
 const App: FC<AppProps> = ({ lang, setLang }) => {
     const { langData, setLangData } = useContext(LanguageContext);
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
-    const [selectedGraphTab, setSelectedGraphTab] = useState<1 | 2 | 3>(1);
+    const [selectedGraphTab, setSelectedGraphTab] = useState<GraphTabIds>(1);
     const [statData, setStatData] = useState({disruptions: {val: 5, change: 23.36} , delays: {val: 8, change: 8.05}, elevators: {val: 6, change: 14.97 }, total: { val: 14, change: 11.25} })
     const [lastRequest, setLastRequest] = useState('-');
     const [reportHistoryData, setReportHistoryData] = useState<ReportHistoryData[]>([
@@ -328,7 +328,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         getData(target_tab);
     }
 
-    const handelGraphTabSelection = (e: MouseEvent, id: 1 | 2 | 3) => {
+    const handelGraphTabSelection = (e: MouseEvent, id: GraphTabIds) => {
         Cookies.set('graph_tab', id.toString());
         setSelectedGraphTab(id);
     }
@@ -343,8 +343,8 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
     }
 
     const getData = (selected_timerange?: TabValues):void => {
-        console.log('?');
         if (active_request) return;
+
         active_request = true;
         axios.get('/api/data', { params: { timerange: selected_timerange ?? selectedTab }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
         .then((res: AxiosResponse) => {
@@ -611,6 +611,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                         <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 1} id={1} onClick={handelGraphTabSelection} />
                         <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 2} id={2} onClick={handelGraphTabSelection} mt="5px" />
                         <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 3} id={3} onClick={handelGraphTabSelection} mt="5px" />
+                        <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 4} id={4} onClick={handelGraphTabSelection} mt="5px" disabled/>
                     </Flex>
                     {
                         right_graph_box
@@ -626,7 +627,3 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
 
 
 export default App;
-
-// React > 18.0.2
-// const container = document.getElementById('root');
-// if (container) createRoot(container).render(<App />)

@@ -13,6 +13,9 @@ interface StatItemProps {
     hasDataLoaded?: boolean,
 }
 
+/**
+ * Framed item that highlights certain statistics and shows its trend.
+ */
 const StatItem: FC<StatItemProps> = ({ id, label, number, increase, percentage, iconPath, iconAlt, hasDataLoaded, borderColor }) => {
 
     const render = () => {

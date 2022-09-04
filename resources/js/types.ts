@@ -1,5 +1,7 @@
 type TabValues = 'd' | 'w' | 'm' | 'y'
 
+type GraphTabIds = 1 | 2 | 3 | 4
+
 type ReportHistoryData = { name: number, disturbances: number, delays: number}
 
 type ReportRankingData = { name: string, reports: number }
@@ -17,4 +19,4 @@ enum Languages {
     EN = 'EN'
 }
 
-export { TabValues, ReportHistoryData, ReportRankingData, ReportLineTypesData, ReportTypesData, DisruptionLengthData, DisturbancesMonthData, Languages }
+export { TabValues, GraphTabIds, ReportHistoryData, ReportRankingData, ReportLineTypesData, ReportTypesData, DisruptionLengthData, DisturbancesMonthData, Languages }
