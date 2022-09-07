@@ -67,5 +67,13 @@ class RouteServiceProvider extends ServiceProvider
                     return response('', 429);
                 });
         });
+
+        RateLimiter::for('probability', function(Request $request) {
+            return Limit::perMinute(1000)
+                ->by($request->ip())
+                ->response(function (Request $request) {
+                    return response('', 429);
+                });
+        });
     }
 }

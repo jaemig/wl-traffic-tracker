@@ -10,7 +10,7 @@ interface GraphBoxProps {
     children?: React.ReactNode,
     hasDataLoaded?: boolean,
     skeletonHeight?: string,
-    borderColor: string,
+    borderColor?: string,
 }
 
 const GraphBox: FC<GraphBoxProps> = ({ width, height, title, labels, children, hasDataLoaded, skeletonHeight, borderColor }) => {
@@ -60,6 +60,7 @@ const GraphBox: FC<GraphBoxProps> = ({ width, height, title, labels, children, h
                 verticalAlign="middle"
                 overflow="hidden"
                 transition="all .15s ease"
+                position="relative"
             >
                 <Heading fontSize="18px" fontWeight="medium">{ title }</Heading>
                 { label_output }
@@ -76,3 +77,4 @@ const GraphBox: FC<GraphBoxProps> = ({ width, height, title, labels, children, h
 }
 
 export default GraphBox;
+export { GraphBoxProps };

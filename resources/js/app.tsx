@@ -1,9 +1,9 @@
 import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode, useToast } from '@chakra-ui/react';
 import React, { createContext, Dispatch, FC, MouseEvent, SetStateAction, useContext, useEffect, useState } from 'react';
 import TabItem from './comps/TabItem';
-import { DisruptionLengthData, DisturbancesMonthData, GraphTabIds, Languages, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
+import { DisruptionLengthData, DisruptionProbabilityData, DisturbancesMonthData, GraphTabIds, Languages, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
 import StatItem from './comps/StatItem';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
 import CircleSwitchItem from './comps/CircleSwitchItem';
 import GraphBox from './comps/GraphBox';
@@ -23,6 +23,7 @@ import EscalatorIcon from '../assets/escalator.png';
 import ReportIcon from '../assets/report.png';
 import Footer from './comps/footer';
 import { LanguageContext } from './context';
+import GraphSelectBox from './comps/GraphSelectBox';
 
 let active_request = false;
 
@@ -292,6 +293,12 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
             delays: 0
         }
     ])
+    const [disruptionProbabilityData, setDisruptionProbabilityData] = useState<DisruptionProbabilityData[]>(() => {
+        const data: DisruptionProbabilityData[] = [];
+        for (let i = 0; i < 24; i++) data.push({ hour: i, probability: 0 });
+        return data;
+    })
+    const [transportLines, setTransportLines] = useState<string[]>([]);
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
     const request_toast = useToast({
         position: 'bottom-right',
@@ -363,6 +370,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                 setReportTypesData(res.data.report_types);
                 setDisturbanceLengthData(res.data.disturbance_length);
                 setDisturbanceMonthData(res.data.disturbance_months);
+                setTransportLines(res.data.lines);
                 if (!hasDataLoaded) setHasDataLoaded(true);
             }
         })
@@ -370,12 +378,11 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         .finally(() => { active_request = false; })
     }
 
-    const render = () => {
-
+    const getGraphs = (selected_tab: GraphTabIds) => {
         let left_graph_box = undefined;
         let right_graph_box = undefined;
 
-        if (selectedGraphTab === 1)
+        if (selected_tab === 1)
         {
             left_graph_box = (
                 <GraphBox
@@ -440,7 +447,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                 </GraphBox>
             )
         }
-        else if (selectedGraphTab === 2)
+        else if (selected_tab === 2)
         {
             left_graph_box = (
                 <GraphBox
@@ -495,7 +502,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                 </GraphBox>
             )
         }
-        else
+        else if (selected_tab === 3)
         {
             left_graph_box = (
                 <GraphBox
@@ -557,7 +564,55 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                     </ResponsiveContainer>
                 </GraphBox>
             )
+        }
+        else if (selected_tab === 4)
+        {
+            left_graph_box = <GraphSelectBox
+                    width='calc(50% - 20px)'
+                    height="240px"
+                    title={ langData?.graphs.report_probability.title ?? '' }
+                    labels={[{name : langData?.graphs.report_history.delays ?? '', color: graph_blue}]}
+                    hasDataLoaded={hasDataLoaded}
+                    borderColor={borderColor}
+                    placeholder={ langData?.graphs.report_probability.placeholder }
+                    options={transportLines.map(line => {return{ 'value': line, 'label': line }} )}
+                    requestFunc={(line: string) => {
+                        return new Promise(resolve => {
+                            axios.get('/api/probability/lines/' + line)
+                            .then((res: AxiosResponse) => {
+                                if (res.status === 200) resolve(res.data);
+                                else resolve([]);
+                            })
+                            .catch((error: AxiosError) => {
+                                resolve([]);
+                            })
+                        })
+                    }}
+                    setGraphData={setDisruptionProbabilityData}
+                >
+                    <ResponsiveContainer width="103%" height="87%">
+                        <AreaChart
+                            data={disruptionProbabilityData}
+                            style={{ marginLeft: '-20px' }}
+                        >
+                            <defs>
+                                <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <XAxis dataKey="hour" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <Area type="monotone" dataKey="probability" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </GraphSelectBox>
         };
+        return { left_graph_box, right_graph_box };
+    }
+
+    const render = () => {
+        const { left_graph_box, right_graph_box} = getGraphs(selectedGraphTab);
 
         return (
             <>
@@ -611,7 +666,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                         <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 1} id={1} onClick={handelGraphTabSelection} />
                         <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 2} id={2} onClick={handelGraphTabSelection} mt="5px" />
                         <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 3} id={3} onClick={handelGraphTabSelection} mt="5px" />
-                        <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 4} id={4} onClick={handelGraphTabSelection} mt="5px" disabled/>
+                        <CircleSwitchItem primColor={purple} selected={selectedGraphTab === 4} id={4} onClick={handelGraphTabSelection} mt="5px"/>
                     </Flex>
                     {
                         right_graph_box

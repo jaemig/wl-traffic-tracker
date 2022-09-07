@@ -50,6 +50,10 @@ type LanguageData = {
             title: string,
             disturbances: string,
             delays: string
+        },
+        report_probability: {
+            title: string,
+            placeholder: string
         }
     },
     footer: {

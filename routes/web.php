@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\WlttController;
 use Illuminate\Support\Facades\Route;
 
 /*

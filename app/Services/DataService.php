@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Line;
 use Carbon\Carbon;
 use App\Models\TrafficReport;
 use Illuminate\Support\Facades\DB;
@@ -140,13 +141,11 @@ class DataService {
             ]
         );
 
-
-
-
         $data->disturbance_length = $this->getReportDurationComparison($timerange_start);
         $data->disturbance_months = $this->getMonthComparison();
         $data->report_line_types = $report_line_types;
         $data->report_types = $this->getLineTypeReportComparison($timerange_start);
+        $data->lines = $this->getListOfLines();
         return $data;
     }
 
@@ -381,6 +380,87 @@ class DataService {
             return $report_types;
         }
         catch (\Exception $e) { return array(); }
+    }
+
+    /**
+     * Generates a sorted name list of registered lines.
+     * Currently only supports subway lines.
+     * @return array
+     */
+    public function getListOfLines()
+    {
+        try
+        {
+            $lines_list = array();
+            $lines = Line::select('name')
+                ->where('name', 'LIKE', 'U_')
+                ->orderBy('name')
+                ->get();
+
+            foreach ($lines as $line) array_push($lines_list, $line->name);
+            return $lines_list;
+        }
+        catch (\Exception $e) { throw $e; return array(); }
+    }
+
+    /**
+     * Gets a 24h report about the chances for an disruption or delay of the specified line.
+     * Returns an array containing the result as the first and the response code as the second item.
+     * @param string $line
+     * @return array
+     */
+    public function getLineReportProbability($line)
+    {
+        try
+        {
+            $line = trim($line);
+            if ($line)
+            {
+                if (Line::firstWhere('name', $line))
+                {
+                     $stmt_result = DB::select("SELECT COUNT(*) AS 'reports', DATE_FORMAT(timestamp, '%H') as 'hour' FROM `traffic_reports` tr JOIN related_lines rl ON rl.report_id = tr.id WHERE (report_category_id = 7 OR report_category_id = 8) AND rl.line_id = (SELECT id FROM `lines` l WHERE l.name =:line LIMIT 1) GROUP BY DATE_FORMAT(tr.timestamp, '%H') ORDER BY hour", ['line' => $line]);
+
+                     $first_report = TrafficReport::orderBy('timestamp')
+                        ->select('timestamp')
+                        ->first();
+
+                    if (!$first_report) throw new \Exception("Could not retrieve first report record");
+
+                    $days_diff = Carbon::createFromFormat('Y-m-d H:i:s', $first_report->timestamp)->diffInDays(Carbon::now());
+
+                    $result = array();
+                    for ($i = 0; $i < 24; $i++)
+                    {
+                        $found_report = null;
+                        $probability_report = null;
+                        foreach ($stmt_result as $report)
+                        {
+                            if ($report->hour == $i)
+                            {
+                                $found_report = $report;
+                                $found_report->hour = (int)$found_report->hour;
+                                break;
+                            }
+                        }
+
+                        if (!$found_report) $probability_report = array('hour' => $i, 'probability' => 0);
+                        else
+                        {
+                            $probability_report = array('hour' => $found_report->hour, 'probability' => $found_report->reports / $days_diff * 100);
+                            // $probability_report->probability = ;
+                        }
+
+                        array_push($result, $probability_report);
+                    }
+
+                    return [$result, 200];
+                    //  return [$result, 200];
+                }
+                return [null, 404];
+            }
+            return [null, 400];
+        }
+        catch (\Exception $e) { throw $e; return array(); }
     }
 
 }

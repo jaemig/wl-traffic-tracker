@@ -21,3 +21,5 @@ Route::get('/check-report', [ReportController::class, 'checkTrafficReport'])
 
 Route::get('/data', [WlttController::class, 'getReportData'])
     ->middleware('throttle:data');
+
+Route::get('/probability/lines/{line}', [WlttController::class, 'getLineDisruptionProbability']);
