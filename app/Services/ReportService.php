@@ -194,6 +194,21 @@ class ReportService {
                         $new_related_stop->save();
                     }
                 }
+
+                // Store all related lines of the report
+                // This targets only lines that are stored in the database
+                if (property_exists($traffic_report, 'relatedLines')) {
+                    foreach ($traffic_report->relatedLines as $related_line) {
+                        $line = Line::firstWhere('name', $related_line);
+                        if ($line)
+                        {
+                            $new_related_line = new RelatedLine;
+                            $new_related_line->line_id = $related_line;
+                            $new_related_line->report_id = $new_report->id;
+                            $new_related_line->save();
+                        }
+                    }
+                }
             }
             else if (!$existing_report->has_ended)
             {

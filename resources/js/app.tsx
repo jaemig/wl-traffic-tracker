@@ -576,19 +576,26 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                     borderColor={borderColor}
                     placeholder={ langData?.graphs.report_probability.placeholder }
                     options={transportLines.map(line => {return{ 'value': line, 'label': line }} )}
-                    requestFunc={(line: string) => {
-                        return new Promise(resolve => {
-                            axios.get('/api/probability/lines/' + line)
-                            .then((res: AxiosResponse) => {
-                                if (res.status === 200) resolve(res.data);
-                                else resolve([]);
-                            })
-                            .catch((error: AxiosError) => {
-                                resolve([]);
-                            })
+                    filterFunction={(line: string) => {
+                        axios.get('/api/probability/lines/' + line)
+                        .then((res: AxiosResponse) => {
+                            if (res.status === 200) setDisruptionProbabilityData(res.data);
                         })
+                        .catch()
                     }}
-                    setGraphData={setDisruptionProbabilityData}
+                    // requestFunc={(line: string) => {
+                    //     return new Promise(resolve => {
+                    //         axios.get('/api/probability/lines/' + line)
+                    //         .then((res: AxiosResponse) => {
+                    //             if (res.status === 200) resolve(res.data);
+                    //             else resolve([]);
+                    //         })
+                    //         .catch((error: AxiosError) => {
+                    //             resolve([]);
+                    //         })
+                    //     })
+                    // }}
+                    // setGraphData={setDisruptionProbabilityData}
                 >
                     <ResponsiveContainer width="103%" height="87%">
                         <AreaChart
