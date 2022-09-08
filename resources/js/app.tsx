@@ -578,24 +578,9 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                     options={transportLines.map(line => {return{ 'value': line, 'label': line }} )}
                     filterFunction={(line: string) => {
                         axios.get('/api/probability/lines/' + line)
-                        .then((res: AxiosResponse) => {
-                            if (res.status === 200) setDisruptionProbabilityData(res.data);
-                        })
-                        .catch()
+                            .then((res: AxiosResponse) => { if (res.status === 200) setDisruptionProbabilityData(res.data); })
+                            .catch()
                     }}
-                    // requestFunc={(line: string) => {
-                    //     return new Promise(resolve => {
-                    //         axios.get('/api/probability/lines/' + line)
-                    //         .then((res: AxiosResponse) => {
-                    //             if (res.status === 200) resolve(res.data);
-                    //             else resolve([]);
-                    //         })
-                    //         .catch((error: AxiosError) => {
-                    //             resolve([]);
-                    //         })
-                    //     })
-                    // }}
-                    // setGraphData={setDisruptionProbabilityData}
                 >
                     <ResponsiveContainer width="103%" height="87%">
                         <AreaChart
