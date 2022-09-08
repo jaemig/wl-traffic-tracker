@@ -447,14 +447,12 @@ class DataService {
                         else
                         {
                             $probability_report = array('hour' => $found_report->hour, 'probability' => $found_report->reports / $days_diff * 100);
-                            // $probability_report->probability = ;
                         }
 
                         array_push($result, $probability_report);
                     }
 
                     return [$result, 200];
-                    //  return [$result, 200];
                 }
                 return [null, 404];
             }
