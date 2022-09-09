@@ -4,9 +4,10 @@ import { DisruptionProbabilityData, SelectOption } from "../types";
 import GraphBox, { GraphBoxProps } from "./GraphBox";
 
 interface GraphSelectBoxProps extends GraphBoxProps  {
+    filterFunction: (filter: string) => void,
     placeholder?: string,
     options?: SelectOption[],
-    filterFunction: (filter: string) => void,
+    allowUnselected?: boolean
     // requestFunc: (filter: string) => Promise<DisruptionProbabilityData[]>,
     // setGraphData: Dispatch<SetStateAction<DisruptionProbabilityData[]>>
 }
@@ -15,9 +16,9 @@ interface GraphSelectBoxProps extends GraphBoxProps  {
  * Graph Box that is extended with a dynamic select field to quickly change the data filter.
  * Passes filterFunction the selected option's value.
  */
-const GraphSelectBox: FC<GraphSelectBoxProps> = ({ width, height, title, borderColor, hasDataLoaded, children, labels, skeletonHeight, placeholder, filterFunction, options = [] }) => {
+const GraphSelectBox: FC<GraphSelectBoxProps> = ({ width, height, title, borderColor, hasDataLoaded, children, labels, skeletonHeight, placeholder, filterFunction, allowUnselected = false, options = [] }) => {
 
-    const getGraphData = async(e: ChangeEvent<HTMLSelectElement>) => { if (e.target.value) filterFunction(e.target.value); }
+    const getGraphData = async(e: ChangeEvent<HTMLSelectElement>) => { if (e.target.value || allowUnselected) filterFunction(e.target.value); }
 
     const render = () => {
         return (

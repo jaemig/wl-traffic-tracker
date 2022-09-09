@@ -146,6 +146,7 @@ class DataService {
         $data->report_line_types = $report_line_types;
         $data->report_types = $this->getLineTypeReportComparison($timerange_start);
         $data->lines = $this->getListOfLines();
+        $data->reports_weekdays = $this->getReportSharePerWeekday()[0] ?? array();
         return $data;
     }
 
@@ -455,7 +456,37 @@ class DataService {
             }
             return [null, 400];
         }
-        catch (\Exception $e) { throw $e; return array(); }
+        catch (\Exception $e) { return array(null, 500); }
+    }
+
+    /**
+     * Gets the share of reports for each weekday. Optionally, a certain line can be specified to filter the results.
+     * Returns an array including the result as the first and the status code as the second element.
+     * @param string $line (optional)
+     * @return array
+     */
+    public function getReportSharePerWeekday($line = null)
+    {
+        try
+        {
+            $params = array();
+            if ($line)
+            {
+                $line_id = Line::firstWhere('name', $line);
+                if ($line_id) $params['line_id'] = $line_id['id'];
+                else return [null, 400];
+            }
+            $stmt_result = DB::select("SELECT COUNT(*) AS 'reports', weekday FROM (SELECT COUNT(*) as 'reports', WEEKDAY(tr.`timestamp`) AS 'weekday' FROM traffic_reports tr JOIN related_lines rl ON rl.report_id = tr.id WHERE report_category_id = 8 ".(count($params) > 0 ? "AND rl.line_id =:line_id " : "")." GROUP BY tr.name) AS T GROUP BY weekday", $params);
+
+            $total_reports = 0;
+            foreach ($stmt_result as $record) $total_reports += $record->reports;
+
+            $report_shares = array();
+            foreach ($stmt_result as $record) $report_shares[$record->weekday] =array('share' => round($record->reports / $total_reports * 100, 2), 'weekday' => $record->weekday);
+
+            return [$report_shares, 200];
+        }
+        catch (\Exception $e) { throw $e; return array(null, 500); }
     }
 
 }

@@ -23,3 +23,5 @@ Route::get('/data', [WlttController::class, 'getReportData'])
     ->middleware('throttle:data');
 
 Route::get('/probability/lines/{line}', [WlttController::class, 'getLineDisruptionProbability']);
+
+Route::get('/report-shares/{line?}', [WlttController::class, 'getReportWeekdaysShare']);

@@ -56,7 +56,8 @@ type LanguageData = {
             placeholder: string
         },
         reports_weekdays: {
-            title: string
+            title: string,
+            label: string
         }
     },
     footer: {
@@ -68,6 +69,9 @@ type LanguageData = {
         update_failed: string,
         lang_change: string,
         lang_change_complete: string
+    },
+    misc: {
+        weekdays: string[]
     }
 }
 

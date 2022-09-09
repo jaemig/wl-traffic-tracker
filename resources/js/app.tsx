@@ -1,7 +1,7 @@
 import { Box, Center, ChakraProvider, Heading, useColorModeValue, Text, Flex, Image, Link, Container, HStack, Checkbox, Skeleton, useColorMode, useToast } from '@chakra-ui/react';
 import React, { createContext, Dispatch, FC, MouseEvent, SetStateAction, useContext, useEffect, useState } from 'react';
 import TabItem from './comps/TabItem';
-import { DisruptionLengthData, DisruptionProbabilityData, DisturbancesMonthData, GraphTabIds, Languages, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportTypesData, TabValues } from './types';
+import { DisruptionLengthData, DisruptionProbabilityData, DisturbancesMonthData, GraphTabIds, Languages, ReportHistoryData, ReportLineTypesData, ReportRankingData, ReportsWeekdayShareData, ReportTypesData, TabValues } from './types';
 import StatItem from './comps/StatItem';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Area, AreaChart, Bar, CartesianGrid, Cell, ComposedChart, LabelList, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
@@ -24,6 +24,7 @@ import ReportIcon from '../assets/report.png';
 import Footer from './comps/footer';
 import { LanguageContext } from './context';
 import GraphSelectBox from './comps/GraphSelectBox';
+import { result } from 'lodash';
 
 let active_request = false;
 
@@ -35,7 +36,7 @@ interface AppProps {
 const App: FC<AppProps> = ({ lang, setLang }) => {
     const { langData, setLangData } = useContext(LanguageContext);
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
-    const [selectedGraphTab, setSelectedGraphTab] = useState<GraphTabIds>(1);
+    const [selectedGraphTab, setSelectedGraphTab] = useState<GraphTabIds>(4);
     const [statData, setStatData] = useState({disruptions: {val: 5, change: 23.36} , delays: {val: 8, change: 8.05}, elevators: {val: 6, change: 14.97 }, total: { val: 14, change: 11.25} })
     const [lastRequest, setLastRequest] = useState('-');
     const [reportHistoryData, setReportHistoryData] = useState<ReportHistoryData[]>([
@@ -298,6 +299,36 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         for (let i = 0; i < 24; i++) data.push({ hour: i, probability: 0 });
         return data;
     })
+    const [reportsWeekdaysShareData, setReportsWeekdaysShareData] = useState<ReportsWeekdayShareData[]>([
+        {
+            share: 0,
+            weekday: 'Mon',
+        },
+        {
+            share: 0,
+            weekday: 'Tue',
+        },
+        {
+            share: 0,
+            weekday: 'Wed',
+        },
+        {
+            share: 0,
+            weekday: 'Thu',
+        },
+        {
+            share: 0,
+            weekday: 'Fri',
+        },
+        {
+            share: 0,
+            weekday: 'Sat',
+        },
+        {
+            share: 0,
+            weekday: 'Sun',
+        }
+    ])
     const [transportLines, setTransportLines] = useState<string[]>([]);
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
     const request_toast = useToast({
@@ -371,6 +402,9 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                 setDisturbanceLengthData(res.data.disturbance_length);
                 setDisturbanceMonthData(res.data.disturbance_months);
                 setTransportLines(res.data.lines);
+
+                setReportsWeekdaysShareData(res.data.reports_weekdays);
+
                 if (!hasDataLoaded) setHasDataLoaded(true);
             }
         })
@@ -603,36 +637,43 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
             )
 
             right_graph_box = (
-                <GraphBox
+                <GraphSelectBox
                     width='calc(50% - 40px)'
                     height="240px"
-                    title={langData?.graphs.reports_weekdays.title ?? ''}
-                    labels={[{ name : langData?.graphs.reports_month.disturbances ?? '', color: '#EA0054'}, {name : langData?.graphs.reports_month.delays ?? '', color: graph_blue}]}
+                    title={ langData?.graphs.reports_weekdays.title ?? '' }
+                    labels={[{name : langData?.graphs.reports_weekdays.label ?? '', color: graph_blue}]}
                     hasDataLoaded={hasDataLoaded}
                     borderColor={borderColor}
+                    placeholder={ langData?.graphs.report_probability.placeholder }
+                    options={transportLines.map(line => {return{ 'value': line, 'label': line }} )}
+                    filterFunction={(line: string) => {
+                        axios.get('/api/report-shares/' + line)
+                            .then(res => {
+                                // Convert the weekday number to the belonging name (first 3 letters only)
+                                for (const record of res.data) record.weekday = langData?.misc.weekdays[record.weekday].substring(0, 3);
+                                if (res.status === 200) setReportsWeekdaysShareData(res.data);
+                            })
+                            .catch();
+                    }}
+                    allowUnselected
                 >
                     <ResponsiveContainer width="103%" height="87%">
                         <AreaChart
-                            data={disturbanceMonthData}
+                            data={reportsWeekdaysShareData}
                             style={{ marginLeft: '-20px' }}
                         >
                             <defs>
-                                <linearGradient id="colorDisrupt" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#EA0054" stopOpacity={0.8} />
-                                    <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
-                                </linearGradient>
                                 <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
                                     <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <XAxis dataKey="weekday" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
                             <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
-                            <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
-                            <Area type="monotone" dataKey="delays" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                            <Area type="monotone" dataKey="share" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
                         </AreaChart>
                     </ResponsiveContainer>
-                </GraphBox>
+                </GraphSelectBox>
             )
         };
         return { left_graph_box, right_graph_box };

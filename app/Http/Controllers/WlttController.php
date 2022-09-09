@@ -42,4 +42,18 @@ class WlttController extends Controller
         }
         catch (\Exception $e) { return response(array(), 500); }
     }
+
+    /**
+     * Gets the share of the reports for each weekday. Optionally, a line can be provided to filter the results
+     * @param string $line (optional)
+     */
+    public function getReportWeekdaysShare($line = null)
+    {
+        try
+        {
+            [$result, $status_code] = $this->data_service->getReportSharePerWeekday($line);
+            return response($result);
+        }
+        catch (\Exception $e) { return response(array(), 500); }
+    }
 }
