@@ -69,6 +69,29 @@ class ReportService {
             }
 
             DB::commit();
+
+            // try
+            // {
+            //     $not_related_reports = DB::select("SELECT id, name, description FROM traffic_reports tr WHERE id NOT IN (SELECT rl.report_id FROM related_lines rl) AND report_category_id IN (8, 9) AND description REGEXP 'U1|U2|U3|U4|U6'");
+
+            //     foreach ($not_related_reports as $not_related_report)
+            //     {
+            //         preg_match('/U1|U2|U3|U4|U6/', $not_related_report->description, $matches);
+            //         foreach ($matches as $report_line)
+            //         {
+            //             $line_record = Line::firstWhere('name', $report_line);
+            //             if ($line_record)
+            //             {
+            //                 $related_line = new RelatedLine();
+            //                 $related_line->line_id = $line_record->id;
+            //                 $related_line->report_id = $not_related_report->id;
+            //                 $related_line->save();
+            //             }
+            //         }
+            //     }
+            // }
+            // catch (\Exception $e) { throw $e; }
+
             return true;
         }
         catch (\Exception $e) {
