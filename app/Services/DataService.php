@@ -418,7 +418,7 @@ class DataService {
             {
                 if (Line::firstWhere('name', $line))
                 {
-                     $stmt_result = DB::select("SELECT COUNT(*) AS 'reports', DATE_FORMAT(timestamp, '%H') as 'hour' FROM `traffic_reports` tr JOIN related_lines rl ON rl.report_id = tr.id WHERE (report_category_id = 8 OR report_category_id = 9) AND rl.line_id = (SELECT id FROM `lines` l WHERE l.name =:line LIMIT 1) GROUP BY DATE_FORMAT(tr.timestamp, '%H') ORDER BY hour", ['line' => $line]);
+                     $stmt_result = DB::select("SELECT COUNT(*) AS 'reports', DATE_FORMAT(timestamp, '%H') as 'hour' FROM `traffic_reports` tr JOIN related_lines rl ON rl.report_id = tr.id WHERE (report_category_id = 8) AND rl.line_id = (SELECT id FROM `lines` l WHERE l.name =:line LIMIT 1) GROUP BY DATE_FORMAT(tr.timestamp, '%H') ORDER BY hour", ['line' => $line]);
 
                      $first_report = TrafficReport::orderBy('timestamp')
                         ->select('timestamp')
