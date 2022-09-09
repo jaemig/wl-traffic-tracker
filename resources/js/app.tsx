@@ -567,7 +567,8 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         }
         else if (selected_tab === 4)
         {
-            left_graph_box = <GraphSelectBox
+            left_graph_box = (
+                <GraphSelectBox
                     width='calc(50% - 20px)'
                     height="240px"
                     title={ langData?.graphs.report_probability.title ?? '' }
@@ -599,6 +600,40 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                         </AreaChart>
                     </ResponsiveContainer>
                 </GraphSelectBox>
+            )
+
+            right_graph_box = (
+                <GraphBox
+                    width='calc(50% - 40px)'
+                    height="240px"
+                    title={langData?.graphs.reports_weekdays.title ?? ''}
+                    labels={[{ name : langData?.graphs.reports_month.disturbances ?? '', color: '#EA0054'}, {name : langData?.graphs.reports_month.delays ?? '', color: graph_blue}]}
+                    hasDataLoaded={hasDataLoaded}
+                    borderColor={borderColor}
+                >
+                    <ResponsiveContainer width="103%" height="87%">
+                        <AreaChart
+                            data={disturbanceMonthData}
+                            style={{ marginLeft: '-20px' }}
+                        >
+                            <defs>
+                                <linearGradient id="colorDisrupt" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#EA0054" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#EA0054" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="colorDelay" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={graph_blue} stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor={graph_blue} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <YAxis axisLine={false} tickLine={false} fontFamily="InterVariable" fontSize="12px" />
+                            <Area type="monotone" dataKey="disturbances" stackId="1" stroke="#FF0000" fill="url(#colorDisrupt)" fillOpacity={0.25} strokeWidth={2} />
+                            <Area type="monotone" dataKey="delays" stackId="1" stroke={graph_blue} fill="url(#colorDelay)" fillOpacity={0.25} strokeWidth={2} />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </GraphBox>
+            )
         };
         return { left_graph_box, right_graph_box };
     }
