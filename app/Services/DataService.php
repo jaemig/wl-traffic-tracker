@@ -444,10 +444,7 @@ class DataService {
                         }
 
                         if (!$found_report) $probability_report = array('hour' => $i, 'probability' => 0);
-                        else
-                        {
-                            $probability_report = array('hour' => $found_report->hour, 'probability' => min([$found_report->reports / $days_diff * 100, 100]));
-                        }
+                        else $probability_report = array('hour' => $found_report->hour, 'probability' => min([$found_report->reports / $days_diff * 100, 100]));
 
                         array_push($result, $probability_report);
                     }
