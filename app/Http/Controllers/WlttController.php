@@ -23,7 +23,7 @@ class WlttController extends Controller
      */
     public function getReportData(Request $request) {
         // $timerange = $request->input('timerange') ?? 'd';
-        $data = $this->data_service->getData($request->input('timerange') ?? 'd');
+        $data = $this->data_service->getData($request->input('timerange') ?? 'd', $request->input('lang'));
 
         return response(json_encode($data), 200);
     }
@@ -39,6 +39,22 @@ class WlttController extends Controller
 
             if ($status_code == 200) return response($result);
             else return response(array(), $status_code);
+        }
+        catch (\Exception $e) { return response(array(), 500); }
+    }
+
+    /**
+     * Gets the share of the reports for each weekday. Optionally, a line can be provided to filter the results.
+     * By specifying a language, the result's language can be forced independently of the client's setting.
+     * @param Illuminate\Http\Request $request
+     * @param string $line (optional)
+     */
+    public function getReportWeekdaysShare(Request $request, $line = null)
+    {
+        try
+        {
+            [$result, $status_code] = $this->data_service->getReportSharePerWeekday($line, $request->input('lang'));
+            return response($result);
         }
         catch (\Exception $e) { return response(array(), 500); }
     }

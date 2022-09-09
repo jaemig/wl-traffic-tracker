@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class DataService {
 
+    public function __construct()
+    {
+        $this->languageService = new LanguageService();
+    }
+
     /**
      * Determines the start and end of the given timerange token
      * @param string $start
@@ -71,10 +76,12 @@ class DataService {
     }
 
     /**
-     * Gets all data based on the database's records
+     * Gets all data based on the database's records.
+     * Optionally accepts a language code to force a certain language output
      * @param string $timerange
+     * @param string $lang (optional)
      */
-    public function getData($timerange)
+    public function getData($timerange, $lang = null)
     {
         // Calculate the last request's time
         $now = Carbon::now()->timezone('Europe/Vienna');
@@ -146,6 +153,7 @@ class DataService {
         $data->report_line_types = $report_line_types;
         $data->report_types = $this->getLineTypeReportComparison($timerange_start);
         $data->lines = $this->getListOfLines();
+        $data->reports_weekdays = $this->getReportSharePerWeekday(null, $lang)[0] ?? array();
         return $data;
     }
 
@@ -418,7 +426,7 @@ class DataService {
             {
                 if (Line::firstWhere('name', $line))
                 {
-                     $stmt_result = DB::select("SELECT COUNT(*) AS 'reports', DATE_FORMAT(timestamp, '%H') as 'hour' FROM `traffic_reports` tr JOIN related_lines rl ON rl.report_id = tr.id WHERE (report_category_id = 8 OR report_category_id = 9) AND rl.line_id = (SELECT id FROM `lines` l WHERE l.name =:line LIMIT 1) GROUP BY DATE_FORMAT(tr.timestamp, '%H') ORDER BY hour", ['line' => $line]);
+                     $stmt_result = DB::select("SELECT COUNT(*) AS 'reports', DATE_FORMAT(timestamp, '%H') as 'hour' FROM `traffic_reports` tr JOIN related_lines rl ON rl.report_id = tr.id WHERE (report_category_id = 8) AND rl.line_id = (SELECT id FROM `lines` l WHERE l.name =:line LIMIT 1) GROUP BY DATE_FORMAT(tr.timestamp, '%H') ORDER BY hour", ['line' => $line]);
 
                      $first_report = TrafficReport::orderBy('timestamp')
                         ->select('timestamp')
@@ -455,7 +463,50 @@ class DataService {
             }
             return [null, 400];
         }
-        catch (\Exception $e) { throw $e; return array(); }
+        catch (\Exception $e) { return array(null, 500); }
+    }
+
+    /**
+     * Gets the share of reports for each weekday. Optionally, a certain line can be specified to filter the results as well as a certain language for the weekday.
+     * Returns an array including the result as the first and the status code as the second element.
+     * @param string $line (optional)
+     * @param string $lang (optional)
+     * @return array
+     */
+    public function getReportSharePerWeekday($line = null, $lang = null)
+    {
+        try
+        {
+            $params = array();
+            if ($line)
+            {
+                $line_id = Line::firstWhere('name', $line);
+                if ($line_id) $params['line_id'] = $line_id['id'];
+                else return [null, 400];
+            }
+            $stmt_result = DB::select("SELECT COUNT(*) AS 'reports', weekday FROM (SELECT COUNT(*) as 'reports', WEEKDAY(tr.`timestamp`) AS 'weekday' FROM traffic_reports tr JOIN related_lines rl ON rl.report_id = tr.id WHERE report_category_id = 8 ".(count($params) > 0 ? "AND rl.line_id =:line_id " : "")." GROUP BY tr.name) AS T GROUP BY weekday", $params);
+
+            $total_reports = 0;
+            foreach ($stmt_result as $record) $total_reports += $record->reports;
+
+            $lang_json = null;
+            if ($lang)
+            {
+                try
+                {
+                    $lang_json = json_decode($this->languageService->getLanguage($lang));
+                }
+                catch (\Exception $ex) { $lang = null; }
+            }
+            $report_shares = array();
+            foreach ($stmt_result as $record) {
+                $wday_name = ($lang_json) ? substr($lang_json->misc->weekdays[$record->weekday], 0, 3) : $record->weekday;
+                $report_shares[$record->weekday] = array('share' => round($record->reports / $total_reports * 100, 2), 'weekday' => $wday_name);
+            }
+
+            return [$report_shares, 200];
+        }
+        catch (\Exception $e) { throw $e; return array(null, 500); }
     }
 
 }

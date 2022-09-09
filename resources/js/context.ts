@@ -54,6 +54,10 @@ type LanguageData = {
         report_probability: {
             title: string,
             placeholder: string
+        },
+        reports_weekdays: {
+            title: string,
+            label: string
         }
     },
     footer: {
@@ -65,6 +69,9 @@ type LanguageData = {
         update_failed: string,
         lang_change: string,
         lang_change_complete: string
+    },
+    misc: {
+        weekdays: string[]
     }
 }
 
