@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class DataService {
 
+    public function __construct()
+    {
+        $this->languageService = new LanguageService();
+    }
+
     /**
      * Determines the start and end of the given timerange token
      * @param string $start
@@ -71,10 +76,12 @@ class DataService {
     }
 
     /**
-     * Gets all data based on the database's records
+     * Gets all data based on the database's records.
+     * Optionally accepts a language code to force a certain language output
      * @param string $timerange
+     * @param string $lang (optional)
      */
-    public function getData($timerange)
+    public function getData($timerange, $lang = null)
     {
         // Calculate the last request's time
         $now = Carbon::now()->timezone('Europe/Vienna');
@@ -146,7 +153,7 @@ class DataService {
         $data->report_line_types = $report_line_types;
         $data->report_types = $this->getLineTypeReportComparison($timerange_start);
         $data->lines = $this->getListOfLines();
-        $data->reports_weekdays = $this->getReportSharePerWeekday()[0] ?? array();
+        $data->reports_weekdays = $this->getReportSharePerWeekday(null, $lang)[0] ?? array();
         return $data;
     }
 
@@ -460,12 +467,13 @@ class DataService {
     }
 
     /**
-     * Gets the share of reports for each weekday. Optionally, a certain line can be specified to filter the results.
+     * Gets the share of reports for each weekday. Optionally, a certain line can be specified to filter the results as well as a certain language for the weekday.
      * Returns an array including the result as the first and the status code as the second element.
      * @param string $line (optional)
+     * @param string $lang (optional)
      * @return array
      */
-    public function getReportSharePerWeekday($line = null)
+    public function getReportSharePerWeekday($line = null, $lang = null)
     {
         try
         {
@@ -481,8 +489,20 @@ class DataService {
             $total_reports = 0;
             foreach ($stmt_result as $record) $total_reports += $record->reports;
 
+            $lang_json = null;
+            if ($lang)
+            {
+                try
+                {
+                    $lang_json = json_decode($this->languageService->getLanguage($lang));
+                }
+                catch (\Exception $ex) { $lang = null; }
+            }
             $report_shares = array();
-            foreach ($stmt_result as $record) $report_shares[$record->weekday] =array('share' => round($record->reports / $total_reports * 100, 2), 'weekday' => $record->weekday);
+            foreach ($stmt_result as $record) {
+                $wday_name = ($lang_json) ? substr($lang_json->misc->weekdays[$record->weekday], 0, 3) : $record->weekday;
+                $report_shares[$record->weekday] = array('share' => round($record->reports / $total_reports * 100, 2), 'weekday' => $wday_name);
+            }
 
             return [$report_shares, 200];
         }

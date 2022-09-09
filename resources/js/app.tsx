@@ -299,36 +299,8 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         for (let i = 0; i < 24; i++) data.push({ hour: i, probability: 0 });
         return data;
     })
-    const [reportsWeekdaysShareData, setReportsWeekdaysShareData] = useState<ReportsWeekdayShareData[]>([
-        {
-            share: 0,
-            weekday: 'Mon',
-        },
-        {
-            share: 0,
-            weekday: 'Tue',
-        },
-        {
-            share: 0,
-            weekday: 'Wed',
-        },
-        {
-            share: 0,
-            weekday: 'Thu',
-        },
-        {
-            share: 0,
-            weekday: 'Fri',
-        },
-        {
-            share: 0,
-            weekday: 'Sat',
-        },
-        {
-            share: 0,
-            weekday: 'Sun',
-        }
-    ])
+    const [reportsWeekdaysShareData, setReportsWeekdaysShareData] = useState<ReportsWeekdayShareData[]>()
+
     const [transportLines, setTransportLines] = useState<string[]>([]);
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
     const request_toast = useToast({
@@ -384,7 +356,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         if (active_request) return;
 
         active_request = true;
-        axios.get('/api/data', { params: { timerange: selected_timerange ?? selectedTab }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
+        axios.get('/api/data', { params: { timerange: selected_timerange ?? selectedTab, lang: lang }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
         .then((res: AxiosResponse) => {
             if (res.status === 200)
             {
@@ -402,7 +374,6 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                 setDisturbanceLengthData(res.data.disturbance_length);
                 setDisturbanceMonthData(res.data.disturbance_months);
                 setTransportLines(res.data.lines);
-
                 setReportsWeekdaysShareData(res.data.reports_weekdays);
 
                 if (!hasDataLoaded) setHasDataLoaded(true);
@@ -647,12 +618,8 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                     placeholder={ langData?.graphs.report_probability.placeholder }
                     options={transportLines.map(line => {return{ 'value': line, 'label': line }} )}
                     filterFunction={(line: string) => {
-                        axios.get('/api/report-shares/' + line)
-                            .then(res => {
-                                // Convert the weekday number to the belonging name (first 3 letters only)
-                                for (const record of res.data) record.weekday = langData?.misc.weekdays[record.weekday].substring(0, 3);
-                                if (res.status === 200) setReportsWeekdaysShareData(res.data);
-                            })
+                        axios.get('/api/report-shares/' + line, { params: { lang: lang } })
+                            .then(res => { if (res.status === 200) setReportsWeekdaysShareData(res.data) })
                             .catch();
                     }}
                     allowUnselected
