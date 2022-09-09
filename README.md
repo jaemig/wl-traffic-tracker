@@ -21,6 +21,7 @@ WLTT is a web application for tracking and monitoring disruptions and delays of 
 - Length of disruptions grouped by transport type
 - Comparison of the number of disruptions and delays by month
 - Disruption Probability per hour and line
+- Share of reports per day of the week (filterable by subway line)
 
 ## Ancillary Functions
 - Light/Dark mode support
