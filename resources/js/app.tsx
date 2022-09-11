@@ -36,7 +36,7 @@ interface AppProps {
 const App: FC<AppProps> = ({ lang, setLang }) => {
     const { langData, setLangData } = useContext(LanguageContext);
     const [selectedTab, setSelectedTab] = useState<TabValues>('d');
-    const [selectedGraphTab, setSelectedGraphTab] = useState<GraphTabIds>(4);
+    const [selectedGraphTab, setSelectedGraphTab] = useState<GraphTabIds>(1);
     const [statData, setStatData] = useState({disruptions: {val: 5, change: 23.36} , delays: {val: 8, change: 8.05}, elevators: {val: 6, change: 14.97 }, total: { val: 14, change: 11.25} })
     const [lastRequest, setLastRequest] = useState('-');
     const [reportHistoryData, setReportHistoryData] = useState<ReportHistoryData[]>([
