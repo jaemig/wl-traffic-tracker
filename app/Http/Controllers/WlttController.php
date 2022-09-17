@@ -23,7 +23,7 @@ class WlttController extends Controller
      */
     public function getReportData(Request $request) {
         // $timerange = $request->input('timerange') ?? 'd';
-        $data = $this->data_service->getData($request->input('timerange') ?? 'd', $request->input('lang'));
+        $data = $this->data_service->getData($request->input('timerange') ?? 'd', $request->input('lang'), $request->input('reportShareLine', null));
 
         return response(json_encode($data), 200);
     }

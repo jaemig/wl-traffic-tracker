@@ -299,7 +299,8 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         for (let i = 0; i < 24; i++) data.push({ hour: i, probability: 0 });
         return data;
     })
-    const [reportsWeekdaysShareData, setReportsWeekdaysShareData] = useState<ReportsWeekdayShareData[]>()
+    const [reportsWeekdaysShareData, setReportsWeekdaysShareData] = useState<ReportsWeekdayShareData[]>();
+    const [reportsWeekdaysShareLine, setReportsWeekdaysShareLine] = useState<string | undefined>();
 
     const [transportLines, setTransportLines] = useState<string[]>([]);
     const [hasDataLoaded, setHasDataLoaded] = useState(false);
@@ -356,7 +357,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
         if (active_request) return;
 
         active_request = true;
-        axios.get('/api/data', { params: { timerange: selected_timerange ?? selectedTab, lang: lang }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
+        axios.get('/api/data', { params: { timerange: selected_timerange ?? selectedTab, lang: lang, reportShareLine: reportsWeekdaysShareLine }, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json'}})
         .then((res: AxiosResponse) => {
             if (res.status === 200)
             {
@@ -619,7 +620,12 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                     options={transportLines.map(line => {return{ 'value': line, 'label': line }} )}
                     filterFunction={(line: string) => {
                         axios.get('/api/report-shares/' + line, { params: { lang: lang } })
-                            .then(res => { if (res.status === 200) setReportsWeekdaysShareData(res.data) })
+                            .then(res => {
+                                if (res.status === 200) {
+                                    setReportsWeekdaysShareData(res.data);
+                                    setReportsWeekdaysShareLine(line);
+                                }
+                            })
                             .catch();
                     }}
                     allowUnselected

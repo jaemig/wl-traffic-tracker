@@ -81,7 +81,7 @@ class DataService {
      * @param string $timerange
      * @param string $lang (optional)
      */
-    public function getData($timerange, $lang = null)
+    public function getData($timerange, $lang = null, $weekday_report_share_line = '')
     {
         // Calculate the last request's time
         $now = Carbon::now()->timezone('Europe/Vienna');
@@ -153,7 +153,7 @@ class DataService {
         $data->report_line_types = $report_line_types;
         $data->report_types = $this->getLineTypeReportComparison($timerange_start);
         $data->lines = $this->getListOfLines();
-        $data->reports_weekdays = $this->getReportSharePerWeekday(null, $lang)[0] ?? array();
+        $data->reports_weekdays = $this->getReportSharePerWeekday($weekday_report_share_line, $lang)[0] ?? array();
         return $data;
     }
 
