@@ -394,7 +394,7 @@ const App: FC<AppProps> = ({ lang, setLang }) => {
                 <GraphBox
                     width='calc(50% - 20px)'
                     height="240px"
-                    title='Meldungsverlauf'
+                    title={langData?.graphs.report_ranking.title ?? ''}
                     labels={[{ name : langData?.graphs.report_history.disturbances ?? '', color: '#EA0054'}, {name : langData?.graphs.report_history.delays ?? '', color: graph_blue}]}
                     hasDataLoaded={hasDataLoaded}
                     borderColor={borderColor}
